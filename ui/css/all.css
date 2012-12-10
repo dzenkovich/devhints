@@ -1,0 +1,69 @@
+/*
+Syntax error: Undefined variable: "$dark-grey".
+        on line 6 of scss/modal.scss
+        from line 1 of scss/application.scss
+        from line 1 of all.scss
+
+1: @import "scss/application";
+2: @import "scss/page";
+3: @import "scss/block";
+
+Backtrace:
+scss/modal.scss:6
+scss/application.scss:1
+all.scss:1
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/script/variable.rb:49:in `_perform'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/script/node.rb:40:in `perform'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:296:in `visit_prop'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/base.rb:37:in `visit'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:98:in `visit'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/base.rb:53:in `block in visit_children'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/base.rb:53:in `map'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/base.rb:53:in `visit_children'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:107:in `block in visit_children'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:119:in `with_environment'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:106:in `visit_children'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/base.rb:37:in `block in visit'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:318:in `visit_rule'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/base.rb:37:in `visit'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:98:in `visit'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:225:in `block in visit_import'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:225:in `map'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:225:in `visit_import'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/base.rb:37:in `visit'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:98:in `visit'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:225:in `block in visit_import'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:225:in `map'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:225:in `visit_import'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/base.rb:37:in `visit'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:98:in `visit'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/base.rb:53:in `block in visit_children'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/base.rb:53:in `map'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/base.rb:53:in `visit_children'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:107:in `block in visit_children'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:119:in `with_environment'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:106:in `visit_children'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/base.rb:37:in `block in visit'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:126:in `visit_root'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/base.rb:37:in `visit'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:98:in `visit'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:7:in `visit'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/root_node.rb:20:in `render'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/engine.rb:315:in `_render'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/engine.rb:262:in `render'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/plugin/compiler.rb:341:in `update_stylesheet'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/plugin/compiler.rb:203:in `block in update_stylesheets'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/plugin/compiler.rb:201:in `each'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/plugin/compiler.rb:201:in `update_stylesheets'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/plugin/compiler.rb:299:in `block in watch'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/vendor/listen/lib/listen/multi_listener.rb:86:in `call'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/vendor/listen/lib/listen/multi_listener.rb:86:in `on_change'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/vendor/listen/lib/listen/multi_listener.rb:95:in `block in initialize_adapter'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/vendor/listen/lib/listen/adapters/polling.rb:55:in `call'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/vendor/listen/lib/listen/adapters/polling.rb:55:in `poll'
+D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/vendor/listen/lib/listen/adapters/polling.rb:31:in `block in start'
+*/
+body:before {
+  white-space: pre;
+  font-family: monospace;
+  content: "Syntax error: Undefined variable: \"$dark-grey\".\A         on line 6 of scss/modal.scss\A         from line 1 of scss/application.scss\A         from line 1 of all.scss\A \A 1: @import \"scss/application\";\A 2: @import \"scss/page\";\A 3: @import \"scss/block\";"; }
