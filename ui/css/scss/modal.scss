@@ -1,22 +1,52 @@
+$modal-width: 510px;
+$modal-z-index: 11;
+
 .cover {
     position: absolute;
     width: 100%;
     height: 100%;
     opacity: 0.5;
     background-color: $dark-grey;
+    z-index: ($modal-z-index)-1;
 }
 
 .modal {
+    position: absolute;
+    width: $modal-width;
+    z-index: $modal-z-index;
+    background-color: $white;
+    box-shadow:0 0 15px $dark-grey;
 
-    .wrap {
+    .header {
+        padding: $main-pad;
+        background-color: $light-grey;
+        border-bottom: 2px dashed $grey;
 
-        .header {
-            background-color: $light-grey;
-            border-bottom:1px solid $grey;
-
-            .title {
-
+        .title {
+            font: {
+                size: 150%;
+                weight: bold;
             }
+        }
+    }
+
+    .content {
+        padding: $main-pad;
+    }
+
+    .buttons {
+        margin-top: $big-pad;
+        text-align: right;
+    }
+
+    .cancel {
+        margin-right: $main-pad;
+        color: $txt-grey;
+        vertical-align: middle;
+        cursor: pointer;
+
+        &:hover{
+            text-decoration: underline;
         }
     }
 }

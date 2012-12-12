@@ -3,6 +3,7 @@
  *
  * @author Denis Zenkovich
  */
+var DH = DH || {}; //ensure namespace
 
 /**
  * Resources loader
@@ -56,25 +57,39 @@ var Loader = (function(){
                 }
 
                 script = {
-                    url: url,
-                    loaded: false
+                    url: url
                 };
 
-                $.ajax({
-                    url: url,
-                    dataType: dataType,
-                    complete: function(jqXHR, textStatus){
+                //TODO use script tags during development, switch to ajax later on.
+                if(dataType == 'script'){
+                    var scriptTag = $('<script></script>').attr('src', url).load(function(){
                         inProgress--;
-                        script.isSuccess = (textStatus == 'success');
-                        script.loaded = true;
+                        script.isSuccess = 'success';
                         if(dataType == 'html'){
                             script.html = jqXHR.responseText;
                         }
                         if(inProgress === 0){
                             if(typeof done == 'function') done();
                         }
-                    }
-                });
+                    }).get(0);
+                    document.body.appendChild(scriptTag);
+                }
+                else{
+                    $.ajax({
+                        url: url,
+                        dataType: dataType,
+                        complete: function(jqXHR, textStatus){
+                            inProgress--;
+                            script.isSuccess = (textStatus == 'success');
+                            if(dataType == 'html'){
+                                script.html = jqXHR.responseText;
+                            }
+                            if(inProgress === 0){
+                                if(typeof done == 'function') done();
+                            }
+                        }
+                    });
+                }
 
                 inProgress++;
                 _allScripts[url] = script;
@@ -88,11 +103,73 @@ var Loader = (function(){
     };
 }());
 
+/**
+ * Singleton for storing all available templates
+ *
+ * @type {Object}
+ */
+var Templates = {
+    templates: {}, //hash of available templates
+
+    /**
+     * load the file and get templates from it
+     *
+     * @param url
+     */
+    load: function(url){
+        Loader.load(url, function(scripts){
+            var script = scripts[url];
+
+            if(script.isSuccess){
+                Templates.parse(script.html);
+            }
+        }, this);
+    },
+
+    /**
+     * parse given html chunk for script tags that are templates
+     *
+     * @param html
+     */
+    parse: function(html){
+        $(html).each(function(){
+            var tpl = $(this);
+            if(tpl.is('script')){
+                Templates.templates[tpl.attr('id')] = tpl.html();
+            }
+        })
+    },
+
+    /**
+     * Return the template by the given name
+     *
+     * @param {String} name
+     * @return {String} template
+     */
+    get: function(name){
+        if(this.templates[name]){
+            return this.templates[name];
+        }
+        else {
+            throw 'Template "'+name+'" not found!';
+        }
+    }
+};
+
+//Load all known templates
+//TODO figure out on demand loader logic
+Templates.load('ui/tpl/app.tpl.html');
+Templates.load('ui/tpl/elements.tpl.html');
+Templates.load('ui/tpl/modal.tpl.html');
+Templates.load('ui/tpl/add-page-form.tpl.html');
+//Templates.load('ui/tpl/block.tpl.html');
+//Templates.load('ui/tpl/item.tpl.html');
+
 $(function(){
     //start the application when all scripts are loaded
     var start = function(){
 
-        var App = new AppView({
+        DH.App = new DH.AppView({
             el: $('#header')
         });
 
@@ -100,6 +177,7 @@ $(function(){
 
     //load dependencies
     Loader.load([
+        'ui/js/elements.js',
         'ui/js/models.js',
         'ui/js/views.js'
     ], start);

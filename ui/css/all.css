@@ -1,69 +1,121 @@
-/*
-Syntax error: Undefined variable: "$dark-grey".
-        on line 6 of scss/modal.scss
-        from line 1 of scss/application.scss
-        from line 1 of all.scss
+.cover {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0.5;
+  background-color: #2d2939;
+  z-index: 11 -1; }
 
-1: @import "scss/application";
-2: @import "scss/page";
-3: @import "scss/block";
+.modal {
+  position: absolute;
+  width: 510px;
+  z-index: 11;
+  background-color: white;
+  box-shadow: 0 0 15px #2d2939; }
+  .modal .header {
+    padding: 20px;
+    background-color: #ededed;
+    border-bottom: 2px dashed lightgrey; }
+    .modal .header .title {
+      font-size: 150%;
+      font-weight: bold; }
+  .modal .content {
+    padding: 20px; }
+  .modal .buttons {
+    margin-top: 40px;
+    text-align: right; }
+  .modal .cancel {
+    margin-right: 20px;
+    color: #888888;
+    vertical-align: middle;
+    cursor: pointer; }
+    .modal .cancel:hover {
+      text-decoration: underline; }
 
-Backtrace:
-scss/modal.scss:6
-scss/application.scss:1
-all.scss:1
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/script/variable.rb:49:in `_perform'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/script/node.rb:40:in `perform'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:296:in `visit_prop'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/base.rb:37:in `visit'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:98:in `visit'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/base.rb:53:in `block in visit_children'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/base.rb:53:in `map'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/base.rb:53:in `visit_children'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:107:in `block in visit_children'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:119:in `with_environment'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:106:in `visit_children'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/base.rb:37:in `block in visit'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:318:in `visit_rule'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/base.rb:37:in `visit'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:98:in `visit'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:225:in `block in visit_import'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:225:in `map'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:225:in `visit_import'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/base.rb:37:in `visit'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:98:in `visit'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:225:in `block in visit_import'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:225:in `map'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:225:in `visit_import'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/base.rb:37:in `visit'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:98:in `visit'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/base.rb:53:in `block in visit_children'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/base.rb:53:in `map'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/base.rb:53:in `visit_children'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:107:in `block in visit_children'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:119:in `with_environment'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:106:in `visit_children'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/base.rb:37:in `block in visit'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:126:in `visit_root'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/base.rb:37:in `visit'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:98:in `visit'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/visitors/perform.rb:7:in `visit'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/tree/root_node.rb:20:in `render'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/engine.rb:315:in `_render'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/engine.rb:262:in `render'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/plugin/compiler.rb:341:in `update_stylesheet'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/plugin/compiler.rb:203:in `block in update_stylesheets'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/plugin/compiler.rb:201:in `each'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/plugin/compiler.rb:201:in `update_stylesheets'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/lib/sass/plugin/compiler.rb:299:in `block in watch'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/vendor/listen/lib/listen/multi_listener.rb:86:in `call'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/vendor/listen/lib/listen/multi_listener.rb:86:in `on_change'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/vendor/listen/lib/listen/multi_listener.rb:95:in `block in initialize_adapter'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/vendor/listen/lib/listen/adapters/polling.rb:55:in `call'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/vendor/listen/lib/listen/adapters/polling.rb:55:in `poll'
-D:/Ruby/lib/ruby/gems/1.9.1/gems/sass-3.2.3/vendor/listen/lib/listen/adapters/polling.rb:31:in `block in start'
-*/
-body:before {
-  white-space: pre;
-  font-family: monospace;
-  content: "Syntax error: Undefined variable: \"$dark-grey\".\A         on line 6 of scss/modal.scss\A         from line 1 of scss/application.scss\A         from line 1 of all.scss\A \A 1: @import \"scss/application\";\A 2: @import \"scss/page\";\A 3: @import \"scss/block\";"; }
+.button {
+  display: inline-block;
+  vertical-align: middle;
+  border: 1px solid lightgrey;
+  background-color: #6b63d9;
+  padding: 10px 20px;
+  color: white;
+  cursor: pointer; }
+  .button:hover {
+    background-color: #928ce3; }
+
+form .row {
+  margin-bottom: 10px;
+  overflow: hidden;
+  padding: 5px; }
+  form .row label {
+    width: 145px;
+    margin: 2px 20px 0 0;
+    font-weight: bold;
+    float: left; }
+  form .row .field {
+    float: left;
+    width: 290px; }
+    form .row .field div {
+      border: 1px solid lightgrey;
+      padding: 5px; }
+      form .row .field div input,
+      form .row .field div textarea {
+        width: 100%;
+        border: none;
+        outline: none; }
+      form .row .field div textarea {
+        height: 18.2 px; }
+    form .row .field.focus div {
+      border: 1px solid #b9b5ed;
+      box-shadow: 0 0 3px #b9b5ed; }
+    form .row .field.error div {
+      border: 1px solid #ae3256;
+      box-shadow: 0 0 3px #ae3256; }
+    form .row .field.focus.error div {
+      border: 1px solid #b373a1;
+      box-shadow: 0 0 3px #b373a1; }
+    form .row .field p.error {
+      display: none;
+      margin-top: 5px;
+      color: #ae3256; }
+    form .row .field.error p.error {
+      display: block; }
+
+body {
+  color: black;
+  font: 14px/1.3 Arial, sans-serif;
+  margin: 0;
+  padding: 0; }
+
+p {
+  margin: 0; }
+
+.top-bar {
+  background-color: #2d2939;
+  overflow: hidden;
+  color: white; }
+  .top-bar .wrap {
+    width: 1000px;
+    margin: 0 auto; }
+    .top-bar .wrap .logo {
+      float: left;
+      margin: 20px; }
+      .top-bar .wrap .logo span {
+        font-size: 200%;
+        font-weight: bold;
+        color: #e2bef9; }
+    .top-bar .wrap .actions {
+      float: right;
+      list-style: none; }
+      .top-bar .wrap .actions li {
+        display: inline-block;
+        margin-right: 20px;
+        vertical-align: middle; }
+        .top-bar .wrap .actions li a {
+          display: block;
+          padding: 10px;
+          background-color: #e2bef9;
+          color: black;
+          cursor: pointer; }
+          .top-bar .wrap .actions li a:hover {
+            background-color: white; }

@@ -1,0 +1,31 @@
+<script id="input" type="text/html">
+    <div class="field">
+        <div class="input">
+            <input class="input-tag" type="text"/>
+        </div>
+        <p class="error"></p>
+    </div>
+</script>
+
+<script id="area" type="text/html">
+    <div class="field">
+        <div class="area">
+            <textarea></textarea>
+        </div>
+        <p class="error"></p>
+    </div>
+</script>
+
+<script id="dropdown" type="text/html">
+    <div class="field">
+        <div class="dropdown">
+            <p class="selected"></p>
+            <ul class="options">
+                {{#options}}
+                <li class="option" data="{{option.value}}">{{option.text}}</li>
+                {{/options}}
+            </ul>
+        </div>
+        <p class="error"></p>
+    </div>
+</script>

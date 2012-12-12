@@ -1,0 +1,73 @@
+$label-width: 145px;
+
+.button {
+    display: inline-block;
+    vertical-align: middle;
+    border: 1px solid $grey;
+    background-color: $button;
+    padding: $small-pad $main-pad;
+    color: $white;
+    cursor: pointer;
+
+    &:hover {
+        background-color: lighten($button, 10%);
+    }
+}
+
+form {
+
+    .row {
+        margin-bottom: $small-pad;
+        overflow: hidden;
+        padding: $micro-pad;
+
+        label {
+            width: $label-width;
+            margin: 2px $main-pad 0 0;
+            font-weight: bold;
+            float: left;
+        }
+
+        .field {
+            float: left;
+            width: $label-width*2;
+
+            div {
+                border: 1px solid $grey;
+                padding: $micro-pad;
+
+                input,
+                textarea {
+                    width: 100%;
+                    border: none;
+                    outline: none;
+                }
+
+                textarea {
+                    height: $line-height;
+                }
+            }
+            &.focus div {
+                border: 1px solid $focus;
+                box-shadow: 0 0 3px $focus;
+            }
+            &.error div {
+                border: 1px solid $error;
+                box-shadow: 0 0 3px $error;
+            }
+            &.focus.error div {
+                border: 1px solid mix($focus, $error);
+                box-shadow: 0 0 3px mix($focus, $error);
+            }
+
+            p.error {
+                display: none;
+                margin-top: $micro-pad;
+                color: $error;
+            }
+            &.error p.error {
+                display: block;
+            }
+        }
+    }
+}
