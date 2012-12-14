@@ -90,6 +90,9 @@ body {
 p {
   margin: 0; }
 
+body > section {
+  background-color: #ededed; }
+
 .top-bar {
   background-color: #2d2939;
   overflow: hidden;
@@ -119,3 +122,20 @@ p {
           cursor: pointer; }
           .top-bar .wrap .actions li a:hover {
             background-color: white; }
+
+.pages {
+  width: 1000px;
+  margin: 0 auto;
+  padding: 40px 0;
+  background-color: white;
+  min-height: 500px;
+  border-left: 1px solid #ededed;
+  border-right: 1px solid #ededed;
+  box-shadow: 0 0 10px #2d2939; }
+  .pages .page-not-found {
+    display: none;
+    border: 1px solid #888888;
+    margin: 0 40px;
+    padding: 40px; }
+  .pages.not-found .page-not-found {
+    display: block; }

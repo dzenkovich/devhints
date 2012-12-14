@@ -30,6 +30,9 @@ body {
 p {
     margin: 0;
 }
+body > section {
+    background-color: $light-grey;
+}
 
 .top-bar {
     background-color: $dark-grey;
@@ -77,5 +80,28 @@ p {
                 }
             }
         }
+    }
+}
+
+.pages {
+    width: $screen;
+    margin: 0 auto;
+    padding: $big-pad 0;
+    background-color: $white;
+    min-height: $screen/2;
+    border: {
+        left: 1px solid $light-grey;
+        right: 1px solid $light-grey;
+    }
+    box-shadow: 0 0 10px $dark-grey;
+
+    .page-not-found {
+        display: none;
+        border: 1px solid $txt-grey;
+        margin: 0 $big-pad;
+        padding: $big-pad;
+    }
+    &.not-found .page-not-found {
+        display: block;
     }
 }

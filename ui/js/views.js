@@ -13,6 +13,7 @@ var DH = DH || {}; //ensure namespace
 DH.AppView = Backbone.View.extend({
     router: null, //router controller
     pages: null, //pages collection
+    pagesCache: {}, //hash of rendered pages for quick toggle
     _addModal: null, //add page modal view object
     _tpl: null, //saves tpl for re-renders
 
@@ -25,26 +26,31 @@ DH.AppView = Backbone.View.extend({
         this.pages.on('add', this.registerPage, this);
         this.pages.fetch();
 
+        this.render();
+
         this.router = new Backbone.Router();
+        this.router.route(':page/:block/:item', 'item');
+        this.router.route(':page/:block', 'block');
         this.router.route(':page', 'page');
-        //this.router.route(':page/:block', 'block');
-        //this.router.route(':page/:block/:item', 'item');
-        this.router.on('router:page', this.openPage, this);
-        Backbone.history.start({pushState: false, root: document.location.href.split('/').pop()});
-
-
+        this.router.on('route:page', this.openPage, this);
+        Backbone.history.start({pushState: true, root: document.location.href.split('/').pop()});
 
         //register all page urls
         this.pages.each(function(page){
             this.router.route(page.get('url'), 'page');
 
         }, this);
-
-        this.render();
     },
 
     render: function(){
+        var resize;
+
         this.$el.html(Mustache.render(Templates.get('app'), {}));
+        resize = function(){
+            this.$el.css('min-height', $(window).height())
+        }.bind(this);
+        $(window).resize(resize);
+        resize();
     },
 
     openPageAddModal: function(){
@@ -56,18 +62,46 @@ DH.AppView = Backbone.View.extend({
         this._addModal.open();
     },
 
-    openPage: function(page){
-        debugger;
+    openPage: function(pageUrl){
+        var pageModel;
+        var pageView = null;
 
-        //var pageView = new DH.PageView(page);
-        //pageView.render();
+        //check for page in cache, if none - create a view for it and render
+        if(!this.pagesCache[pageUrl]){
+            pageModel = this.pages.findByUrl(pageUrl);
+            if(pageModel){
+                var pageView = new DH.PageView(pageModel);
+                pageView.render();
+                pageView.$el.hide().appendTo(this.$('.pages'));
+            }
+        }
+        else{
+            pageView = this.pagesCache[pageUrl];
+        }
+
+        if(pageView){
+            this.$('.pages').removeClass('not-found');
+            this.$('.pages .page').hide();
+            pageView.$el.fadeIn();
+        }
+        else{
+            this.$('.pages').addClass('not-found');
+        }
     },
 
     addPage: function(data){
-        var page = this.pages.create(data);
-        var pageUrl = page.get('url');
+        var page = this.pages.create(data, {
+            success: function(){
+                debugger
 
-        this.router.navigate(pageUrl, {trigger: true});
+                var pageUrl = page.get('url');
+                this.router.navigate(pageUrl, {trigger: true});
+            },
+            error: function(){
+                throw 'Server error while adding page.';
+            }
+        });
+
     }
 });
 
@@ -93,7 +127,7 @@ DH.AddPageModalView = DH.ModalView.extend({
         this.Form.$el = $(Mustache.render(Templates.get('add-page-form'), this.data));
         this.Form.on('submit', function(){
             this.addPage({
-                name: FieldTitle.val(),
+                title: FieldTitle.val(),
                 url: FieldSlug.val(),
                 description: FieldDescription.val()
             });

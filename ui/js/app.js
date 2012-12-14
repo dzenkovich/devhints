@@ -158,10 +158,11 @@ var Templates = {
 
 //Load all known templates
 //TODO figure out on demand loader logic
-Templates.load('ui/tpl/app.tpl.html');
-Templates.load('ui/tpl/elements.tpl.html');
-Templates.load('ui/tpl/modal.tpl.html');
-Templates.load('ui/tpl/add-page-form.tpl.html');
+Templates.load('/ui/tpl/app.tpl.html');
+Templates.load('/ui/tpl/elements.tpl.html');
+Templates.load('/ui/tpl/modal.tpl.html');
+Templates.load('/ui/tpl/add-page-form.tpl.html');
+Templates.load('/ui/tpl/page.tpl.html');
 //Templates.load('ui/tpl/block.tpl.html');
 //Templates.load('ui/tpl/item.tpl.html');
 
@@ -170,15 +171,15 @@ $(function(){
     var start = function(){
 
         DH.App = new DH.AppView({
-            el: $('#header')
+            el: $('#app')
         });
 
     };
 
     //load dependencies
     Loader.load([
-        'ui/js/elements.js',
-        'ui/js/models.js',
-        'ui/js/views.js'
+        '/ui/js/elements.js',
+        '/ui/js/models.js',
+        '/ui/js/views.js'
     ], start);
 });
