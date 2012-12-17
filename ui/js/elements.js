@@ -191,7 +191,7 @@ DH.ElementView = Backbone.View.extend({
 /**
  * Input field element
  *
- * @type {*}
+ * @type {Form Element}
  */
 DH.InputView = DH.ElementView.extend({
     _$input: null, //html input
@@ -227,7 +227,7 @@ DH.InputView = DH.ElementView.extend({
 /**
  * Textarea field element
  *
- * @type {*}
+ * @type {Form Element}
  */
 DH.AreaView = DH.ElementView.extend({
     checks: [], //reset checks list, or .prototype pointer would make it as a static across all children
@@ -258,5 +258,151 @@ DH.AreaView = DH.ElementView.extend({
         this.$el = $(Mustache.render(Templates.get('area'), this.data));
         this.delegateEvents();
         this._$area = this.$('textarea');
+    }
+});
+
+/**
+ * Dropdown field element
+ *
+ * @type {Form Element}
+ */
+DH.DropdownView = DH.ElementView.extend({
+    checks: [], //reset checks list, or .prototype pointer would make it as a static across all children
+    _$list: null, //html div
+    _options: [], //list options hashes
+    _selected: null, //stores last selected value
+    _$hover: null, //html option with mouse or kb hover
+    _defText: null, //text to show when nothing selected (provided in render)
+
+    events: {
+        'click .dropdown': 'click',
+        'focus .dropdown .catcher': 'focus',
+        'blur .dropdown .catcher': 'blur',
+        'keypress .dropdown .catcher': 'search',
+        'mouseenter .dropdown .options li': 'highlight',
+        'mouseleave .dropdown .options li': 'removeHighlight',
+        'click .dropdown .options li': 'pick'
+    },
+
+    initialize: function(options){
+        if(options){
+            if(options.options){
+                this._options = options.options;
+            }
+            if(options.selected){
+
+            }
+        }
+
+        $(document).click(this.hide.bind(this));
+
+        //reset checks list, or .prototype pointer would make it as a static across all children
+        this.checks = [];
+        DH.ElementView.prototype.initialize.call(this)
+    },
+
+    render: function(text){
+        var data = {
+            options: this._options
+        };
+
+        this.$el = $(Mustache.render(Templates.get('dropdown'), data));
+        this.delegateEvents();
+        this._$list = this.$('.options');
+
+        if(text){
+            this._defText = text;
+        }
+        this.reset();
+    },
+
+    val: function(){
+        return this._selected?this._selected:null;
+    },
+
+    select: function(value, options){
+        var option;
+
+        option = _.find(this._options, function(el){
+            if(el.value == value) return true;
+        });
+
+        if(option){
+            this.$('.selected').html(option.text).removeClass('novalue');
+            this._selected = option.value;
+            this._$list.find('[data="'+value+'"]').addClass('selected');
+            if(!options || !options.silent){
+                this.trigger('change', {value: option.value, text: option.text});
+            }
+        }
+    },
+
+    highlight: function(e){
+        if(this._$hover){
+            this._$hover.removeClass('over');
+        }
+        this._$hover = $(e.target).addClass('over');
+    },
+
+    removeHighlight: function(e){
+        var el = $(e.target);
+        el.removeClass('over');
+        if(el == this._$hover) this._$hover = null;
+    },
+
+    pick: function(e){
+        if(e.type == 'click'){
+            e.stopPropagation();
+        }
+        if(this._$hover){
+            this.select(this._$hover.attr('data'));
+            this.hide();
+        }
+    },
+
+    search: function(){
+        //TODO add keyboard control
+    },
+
+    show: function(){
+        this._$list.fadeIn();
+    },
+
+    hide: function(){
+        this._$list.fadeOut();
+        this.cleanup();
+
+    },
+
+    cleanup: function(){
+        if(this._$hover){
+            this._$hover.removeClass('over');
+            this._$hover = null;
+        }
+    },
+
+    reset: function(){
+        if(this._defText){
+            this.$('.selected').html(this._defText).addClass('novalue');
+            this._selected = null;
+        }
+        else{
+            this.select(this._options[0].value);
+        }
+    },
+
+    click: function(e){
+        if(e.type == 'click'){
+            e.stopPropagation();
+        }
+
+        this.$('.catcher').focus();
+        this.show();
+    },
+
+    resetOptions: function(options){
+        this._options = options;
+        this.$el.remove();
+        this.render();
     }
 });

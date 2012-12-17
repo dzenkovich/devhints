@@ -32,8 +32,22 @@ DH.PageCollection = Backbone.Collection.extend({
     url: 'sync/page',
     model: DH.PageModel,
 
-    getNames: function(){
+    findByUrl: function(url){
+        return this.where({url: url}).shift();
+    }
+});
 
+/**
+ * Collection of blocks, model to help page model in organizing it's blocks
+ *
+ * @type {Collection}
+ */
+DH.BlockCollection = Backbone.Collection.extend({
+    url: 'sync/page',
+    model: DH.BlockModel,
+
+    initialize: function(url){
+        this.url = this.url + url;
     },
 
     findByUrl: function(url){
@@ -47,7 +61,7 @@ DH.PageCollection = Backbone.Collection.extend({
  *
  * @type {Model}
  */
-var Block = Backbone.Model.extend({
+var BlockModel = Backbone.Model.extend({
     attributes: {
         title: '', //required, the block title
         url: '' //required, the url segment to bring focus to this block on page load
@@ -59,12 +73,14 @@ var Block = Backbone.Model.extend({
     }
 });
 
+
+
 /**
  * Item model represents the hint or knowledge piece
  *
  * @type {*}
  */
-var Item = Backbone.Model.extend({
+var ItemModel = Backbone.Model.extend({
     attributes: {
         title: '', //required, the block title
         url: '', //required, the url segment to bring focus to this item on page load

@@ -70,35 +70,79 @@
 		return $db->insert_id;
 	}
 	
+	function get_pages(){
+		global $db;
+		
+		$pages = array();
+		$res = $db->query("SELECT * FROM dh_pages;");
+		$rows = $res->fetch_all(MYSQLI_ASSOC);
+		for($i=0; $i<count($rows); $i++){
+			$page = json_decode($rows[$i]['data']);
+			$page->dbid = $rows[$i]['id'];
+			array_push($pages, $page);
+		}
+		
+		return $pages;
+	}
+	
+	function get_blocks($page_id){
+		global $db;
+		
+		$query = $db->prepare("SELECT * FROM dh_blocks WHERE page_id=?;");
+		$query->bind_param("i", $page_id);
+		$res = $query->execute();
+		$query->close();
+		
+		return $res->fetch_all(MYSQLI_ASSOC);
+	}
+	
+	function get_items($block_id){
+		global $db;
+		
+		$query = $db->prepare("SELECT * FROM dh_items WHERE block_id=?;");
+		$query->bind_param("i", $block_id);
+		$res = $query->execute();
+		$query->close();
+		
+		return $res->fetch_all(MYSQLI_ASSOC);
+	}
 	
 	$type = $_GET["type"];
 	$mode = $_SERVER["REQUEST_METHOD"];
 	$ret = null;
 	$id = null;
 	$data = null;
+	$slug = null;
+	
 	if($mode=="PUT"){
 		$data = json_decode(file_get_contents("php://input"));
 	}
-	else{
+	elseif($mode == "POST"){
 		$data = json_decode($_POST);
 	}
 	if($mode=="POST") $id = $data['dbid'];
-	$json = json_encode($data);
+	if($data) $json = json_encode($data);
+	$parts = explode("/", $_SERVER["REQUEST_URI"]);
+	$slug = array_pop($parts);
+	$slug = in_array($slug, array('page', 'block', 'item'))?null:$slug;
 	
 	switch($type){
 		case "page":
 			if($mode=="PUT") $ret = add_page($json);
 			if($mode=="POST") $ret = update_page($id, $json);
+			if($mode=="GET") $ret = get_pages();
 			break;
 		case "block":
 			if($mode=="PUT") $ret = add_block($json);
 			if($mode=="POST") $ret = update_block($id, $json);
+			if($mode=="GET") $ret = get_blocks($page_id);
 			break;
 		case "item":
 			if($mode=="PUT") $ret = add_item($json);
 			if($mode=="POST") $ret = update_item($id, $json);
+			if($mode=="GET") $ret = get_items($block_id);
 			break;
 	}
 	
-	echo json_encode(array('return' => $ret));
+	echo json_encode($ret);
 ?>

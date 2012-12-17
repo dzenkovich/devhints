@@ -27,47 +27,106 @@ form {
             font-weight: bold;
             float: left;
         }
+    }
+}
 
-        .field {
-            float: left;
-            width: $label-width*2;
+.field {
+    float: left;
+    width: $label-width*2;
+    color: $txt-default;
 
-            div {
-                border: 1px solid $grey;
-                padding: $micro-pad;
+    div {
+        border: 1px solid $grey;
+        padding: $micro-pad;
 
-                input,
-                textarea {
-                    width: 100%;
-                    border: none;
-                    outline: none;
-                }
+        input,
+        textarea {
+            width: 100%;
+            padding: 0;
+            border: none;
+            outline: none;
+        }
 
-                textarea {
-                    height: $line-height;
-                }
-            }
-            &.focus div {
-                border: 1px solid $focus;
-                box-shadow: 0 0 3px $focus;
-            }
-            &.error div {
-                border: 1px solid $error;
-                box-shadow: 0 0 3px $error;
-            }
-            &.focus.error div {
-                border: 1px solid mix($focus, $error);
-                box-shadow: 0 0 3px mix($focus, $error);
-            }
+        textarea {
+            height: $line-height;
+        }
+    }
+    &.focus div {
+        border: 1px solid $focus;
+        box-shadow: 0 0 3px $focus;
+    }
+    &.error div {
+        border: 1px solid $error;
+        box-shadow: 0 0 3px $error;
+    }
+    &.focus.error div {
+        border: 1px solid mix($focus, $error);
+        box-shadow: 0 0 3px mix($focus, $error);
+    }
 
-            p.error {
-                display: none;
-                margin-top: $micro-pad;
-                color: $error;
-            }
-            &.error p.error {
-                display: block;
+    .dropdown {
+        position: relative;
+        background-color: $white;
+
+        .selected {
+            min-height: 1.3em;
+
+            &.novalue {
+                font-style: italic;
             }
         }
+
+        .catcher {
+            position: absolute;
+            top: 0;
+            right: 5px;
+            width: 1px;
+            padding: 0;
+        }
+
+        .arrow {
+            display: block;
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 35px;
+            height: 100%;
+            background: $light-grey url(/ui/img/down-arrow.png) 50% 50% no-repeat;
+            border-left: 1px solid $grey;
+            text-align: center;
+        }
+
+        .options {
+            display: none;
+            overflow: auto;
+            position: absolute;
+            top: 100%;
+            margin-top: 1px;
+            left: -1px;
+            padding: 0;
+            width: 100%;
+            max-height: 400px;
+            background: #FCFCFC;
+            border: 1px solid $grey;
+            z-index: 10;
+
+            li {
+                padding: $micro-pad;
+                cursor: pointer;
+
+                &.over {
+                    background-color: lighten($button, 30%);
+                }
+            }
+        }
+    }
+
+    p.error {
+        display: none;
+        margin-top: $micro-pad;
+        color: $error;
+    }
+    &.error p.error {
+        display: block;
     }
 }

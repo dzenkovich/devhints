@@ -5,13 +5,9 @@
                 <span>DevHints</span>
             </a>
             <ul class="actions">
-                <li class="user">Welcome, [User]</li>
-                <li>
-                    <ul>
-                        <li>no pages present</li>
-                    </ul>
-                </li>
-                <li>
+                <li class="action user">Welcome, [User]</li>
+                <li class="action nav-dropdown"></li>
+                <li class="action">
                     <a class="j-add-page">Add Page</a>
                 </li>
             </ul>
@@ -22,5 +18,20 @@
             <h1>Page Not Found</h1>
             <p>Page with the given URL not found.</p>
         </div>
+    </div>
+</script>
+<script id="homepage" type="text/html">
+    <div class="homepage">
+        <h1>Welcome to DevHints!</h1>
+        <p>Please pick a page from the list above:</p>
+        <ul class="pages-list">
+            {{#pages}}
+            <li class="item">
+                <h2><a href="/{{url}}">{{title}}</a></h2>
+                <span>/{{url}}</span>
+                <p>{{description}}</p>
+            </li>
+            {{/pages}}
+        </ul>
     </div>
 </script>

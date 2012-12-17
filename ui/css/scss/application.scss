@@ -27,17 +27,38 @@ body {
     margin: 0;
     padding: 0;
 }
+
 p {
     margin: 0;
 }
+
 body > section {
     background-color: $light-grey;
 }
 
+input,
+textarea {
+    font: 14px/1.3 Arial, sans-serif;
+}
+
+a {
+    color: $button;
+    text-decoration: none;
+}
+
 .top-bar {
     background-color: $dark-grey;
-    overflow: hidden;
     color: $white;
+
+    //can't use overflow:hidden here because of the pages dropdown
+    &:after {
+        content: ".";
+        display: block;
+        clear: both;
+        visibility: hidden;
+        line-height: 0;
+        height: 0;
+    }
 
     .wrap {
         width: $screen;
@@ -61,7 +82,7 @@ body > section {
             float: right;
             list-style: none;
 
-            li {
+            .action {
                 display: inline-block;
                 margin-right: $main-pad;
                 vertical-align: middle;
@@ -84,9 +105,9 @@ body > section {
 }
 
 .pages {
-    width: $screen;
+    width: $screen - $big-pad*2;
     margin: 0 auto;
-    padding: $big-pad 0;
+    padding: $big-pad;
     background-color: $white;
     min-height: $screen/2;
     border: {
@@ -98,10 +119,36 @@ body > section {
     .page-not-found {
         display: none;
         border: 1px solid $txt-grey;
-        margin: 0 $big-pad;
         padding: $big-pad;
     }
     &.not-found .page-not-found {
+        display: block;
+    }
+
+    .homepage {
+        display: none;
+
+        .pages-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+
+            li {
+                padding: $small-pad;
+                margin-left: $main-pad;
+                border-top: 1px solid $grey;
+
+                &:first-child {
+                    border-top: 0;
+                }
+
+                h1 {
+
+                }
+            }
+        }
+    }
+    &.open-homepage .homepage {
         display: block;
     }
 }

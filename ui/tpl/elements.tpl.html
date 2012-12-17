@@ -19,10 +19,12 @@
 <script id="dropdown" type="text/html">
     <div class="field">
         <div class="dropdown">
+            <input type="text" class="catcher"/>
             <p class="selected"></p>
+            <span class="arrow"></span>
             <ul class="options">
                 {{#options}}
-                <li class="option" data="{{option.value}}">{{option.text}}</li>
+                <li class="option" data="{{value}}">{{text}}</li>
                 {{/options}}
             </ul>
         </div>
