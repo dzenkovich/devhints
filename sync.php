@@ -1,11 +1,54 @@
 <?php
 	$db = new mysqli("localhost", "devhints", "1234", "devhints");
+	
+	function get_page_id_by_url($page_url){
+		global $db;
+		
+		$query = $db->prepare("SELECT id FROM dh_pages WHERE url=?;");
+		$query->bind_param("s", $page_url);
+		$query->execute();
+		$res = $query->get_result();
+		$query->close();
+		
+		$row = $res->fetch_row();
+		return $row?$row[0]:null;
+	}
+	
+	function get_block_id_by_url($block_url){
+		global $db;
+		
+		$query = $db->prepare("SELECT id FROM dh_blocks WHERE url=?;");
+		$query->bind_param("s", $block_url);
+		$query->execute();
+		$res = $query->get_result();
+		$query->close();
+		
+		$row = $res->fetch_row();
+		return $row?$row[0]:null;
+	}
+	
+	function get_item_id_by_url($item_url){
+		global $db;
+		
+		$query = $db->prepare("SELECT id FROM dh_items WHERE url=?;");
+		$query->bind_param("s", $item_url);
+		$query->execute();
+		$res = $query->get_result();
+		$query->close();
+		
+		$row = $res->fetch_row();
+		return $row?$row[0]:null;
+	}
 
-	function update_page($id, $json){
+	function update_page($page_url, $json){
 		global $db;
 		
-		$query = $db->prepare("UPDATE dh_pages SET data=? WHERE id = ?;");
-		$query->bind_param("si", $json, $id);
+		$page_id = get_page_id_by_url($page_url);
+		$data = json_decode($json);
+		$new_url = $data->url;
+		
+		$query = $db->prepare("UPDATE dh_pages SET data=?, url=? WHERE id = ?;");
+		$query->bind_param("ssi", $json, $new_url, $page_id);
 		$query->execute();
 		$changes = $query->affected_rows;
 		$query->close();
@@ -13,11 +56,15 @@
 		return $changes > 0;
 	}
 	
-	function update_block($id, $json){
+	function update_block($block_url, $json){
 		global $db;
 		
-		$query = $db->prepare("UPDATE dh_blocks SET data=? WHERE id = ?;");
-		$query->bind_param("si", $json, $id);
+		$block_id = get_block_id_by_url($block_url);
+		$data = json_decode($json);
+		$new_url = $data->url;
+		
+		$query = $db->prepare("UPDATE dh_blocks SET data=?, url=? WHERE id = ?;");
+		$query->bind_param("ssi", $json, $new_url, $block_id);
 		$query->execute();
 		$changes = $query->affected_rows;
 		$query->close();
@@ -25,11 +72,15 @@
 		return $changes > 0;
 	}
 	
-	function update_item($id, $json){
+	function update_item($item_url, $json){
 		global $db;
 		
-		$query = $db->prepare("UPDATE dh_items SET data=? WHERE id = ?;");
-		$query->bind_param("si", $json, $id);
+		$item_id = get_item_id_by_url($block_url);
+		$data = json_decode($json);
+		$new_url = $data->url;
+		
+		$query = $db->prepare("UPDATE dh_items SET data=?, url=? WHERE id = ?;");
+		$query->bind_param("ssi", $json, $new_url, $item_id);
 		$query->execute();
 		$changes = $query->affected_rows;
 		$query->close();
@@ -40,8 +91,11 @@
 	function add_page($json){
 		global $db;
 		
-		$query = $db->prepare("INSERT INTO dh_pages SET data=?;");
-		$query->bind_param("s", $json);
+		$data = json_decode($json);
+		$url = $data->url;
+		
+		$query = $db->prepare("INSERT INTO dh_pages SET data=?, url=?;");
+		$query->bind_param("ss", $json, $url);
 		$query->execute();
 		$query->close();
 		
@@ -51,8 +105,11 @@
 	function add_block($json){
 		global $db;
 		
-		$query = $db->prepare("INSERT INTO dh_blocks SET data=?;");
-		$query->bind_param("s", $json);
+		$data = json_decode($json);
+		$url = $data->url;
+		
+		$query = $db->prepare("INSERT INTO dh_blocks SET data=?, url=?;");
+		$query->bind_param("ss", $json, $url);
 		$query->execute();
 		$query->close();
 		
@@ -62,8 +119,11 @@
 	function add_item($json){
 		global $db;
 		
-		$query = $db->prepare("INSERT INTO dh_items SET data=?;");
-		$query->bind_param("s", $json);
+		$data = json_decode($json);
+		$url = $data->url;
+		
+		$query = $db->prepare("INSERT INTO dh_items SET data=?, url=?;");
+		$query->bind_param("ss", $json, $url);
 		$query->execute();
 		$query->close();
 		
@@ -85,64 +145,45 @@
 		return $pages;
 	}
 	
-	function get_blocks($page_id){
+	function get_blocks($page_url){
 		global $db;
 		
+		$page_id = get_page_id_by_url($page_url);
+		
+		$blocks = array();
 		$query = $db->prepare("SELECT * FROM dh_blocks WHERE page_id=?;");
 		$query->bind_param("i", $page_id);
-		$res = $query->execute();
+		$query->execute();
+		$res = $query->get_result();
 		$query->close();
+		$rows = $res->fetch_all(MYSQLI_ASSOC);
+		for($i=0; $i<count($rows); $i++){
+			$block = json_decode($rows[$i]['data']);
+			$block->dbid = $rows[$i]['id'];
+			array_push($blocks, $block);
+		}
 		
-		return $res->fetch_all(MYSQLI_ASSOC);
+		return $blocks;
 	}
 	
-	function get_items($block_id){
+	function get_items($block_url){
 		global $db;
 		
+		$block_id = get_block_id_by_url($block_url);
+		
+		$items = array();
 		$query = $db->prepare("SELECT * FROM dh_items WHERE block_id=?;");
 		$query->bind_param("i", $block_id);
-		$res = $query->execute();
+		$query->execute();
+		$res = $query->get_result();
 		$query->close();
+		$rows = $res->fetch_all(MYSQLI_ASSOC);
+		for($i=0; $i<count($rows); $i++){
+			$item = json_decode($rows[$i]['data']);
+			$item->dbid = $rows[$i]['id'];
+			array_push($items, $item);
+		}
 		
-		return $res->fetch_all(MYSQLI_ASSOC);
+		return $items;
 	}
-	
-	$type = $_GET["type"];
-	$mode = $_SERVER["REQUEST_METHOD"];
-	$ret = null;
-	$id = null;
-	$data = null;
-	$slug = null;
-	
-	if($mode=="PUT"){
-		$data = json_decode(file_get_contents("php://input"));
-	}
-	elseif($mode == "POST"){
-		$data = json_decode($_POST);
-	}
-	if($mode=="POST") $id = $data['dbid'];
-	if($data) $json = json_encode($data);
-	$parts = explode("/", $_SERVER["REQUEST_URI"]);
-	$slug = array_pop($parts);
-	$slug = in_array($slug, array('page', 'block', 'item'))?null:$slug;
-	
-	switch($type){
-		case "page":
-			if($mode=="PUT") $ret = add_page($json);
-			if($mode=="POST") $ret = update_page($id, $json);
-			if($mode=="GET") $ret = get_pages();
-			break;
-		case "block":
-			if($mode=="PUT") $ret = add_block($json);
-			if($mode=="POST") $ret = update_block($id, $json);
-			if($mode=="GET") $ret = get_blocks($page_id);
-			break;
-		case "item":
-			if($mode=="PUT") $ret = add_item($json);
-			if($mode=="POST") $ret = update_item($id, $json);
-			if($mode=="GET") $ret = get_items($block_id);
-			break;
-	}
-	
-	echo json_encode($ret);
 ?>

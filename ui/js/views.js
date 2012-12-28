@@ -8,7 +8,7 @@ var DH = DH || {}; //ensure namespace
 /**
  * The main view of application: page navigation/creation/deletion and etc
  *
- * @type {*}
+ * @type {View}
  */
 DH.AppView = Backbone.View.extend({
     router: null, //router controller
@@ -174,9 +174,10 @@ DH.AppView = Backbone.View.extend({
 /**
  * Add page modal interface
  *
- * @type {*}
+ * @type {View}
  */
 DH.AddPageModalView = DH.ModalView.extend({
+    form: null, //page form element
 
     initialize: function(){
         DH.ModalView.prototype.initialize.call(this);
@@ -189,9 +190,9 @@ DH.AddPageModalView = DH.ModalView.extend({
         var FieldSlug;
         var FieldDescription;
 
-        this.Form = new DH.FormView();
-        this.Form.$el = $(Mustache.render(Templates.get('add-page-form'), this.data));
-        this.Form.on('submit', function(){
+        this.form = new DH.FormView();
+        this.form.$el = $(Mustache.render(Templates.get('add-page-form'), this.data));
+        this.form.on('submit', function(){
             this.createPage({
                 title: FieldTitle.val(),
                 url: FieldSlug.val(),
@@ -221,24 +222,24 @@ DH.AddPageModalView = DH.ModalView.extend({
         FieldDescription.render();
 
         //register fields to the form
-        this.Form.register(FieldTitle, this.Form.$('.j-field-title'));
-        this.Form.register(FieldSlug, this.Form.$('.j-field-slug'));
-        this.Form.register(FieldDescription, this.Form.$('.j-field-description'));
+        this.form.register(FieldTitle, this.form.$('.j-field-title'));
+        this.form.register(FieldSlug, this.form.$('.j-field-slug'));
+        this.form.register(FieldDescription, this.form.$('.j-field-description'));
 
         //remember to bind click handler to this object
-        this.Form.$('.j-lnk-cancel').click(function(){
+        this.form.$('.j-lnk-cancel').click(function(){
             this.close();
         }.bind(this));
         //remember to bind click handler to this object
-        this.Form.$('.j-btn-add').click(function(){
-            this.Form.submit();
+        this.form.$('.j-btn-add').click(function(){
+            this.form.submit();
         }.bind(this));
 
         DH.ModalView.prototype.render.call(this); //render the generic modal we inherited
 
         this.setTitle('Add a Page');
 
-        this._$content.append(this.Form.$el); //place the form
+        this._$content.append(this.form.$el); //place the form
     },
 
     createPage: function(data){
@@ -248,42 +249,195 @@ DH.AddPageModalView = DH.ModalView.extend({
 });
 
 /**
- * Page representation, linked to PageModel
+ * Page representation, controls blocks collection, linked to page model
  *
- * @type {*}
+ * @type {View}
  */
 DH.PageView = Backbone.View.extend({
+    model: null, //page model
     blocks: null, //collection of page blocks
+    form: null, //page edit form element //TODO add page editing
 
+    events: {
+        'click .add-block': 'addBlock'
+    },
 
     initialize: function(model){
         this.model = model;
-        this.model.on('change', this.render, this);
+        //this.model.on('change', this.render, this);
         this.model.on('destroy', this.remove, this);
 
-        this.blocks = new DH.BlockCollection(this.model.id);
-        this.blocks.on('add', this.registerBlock, this);
+        this.blocks = new DH.BlockCollection();
+        this.blocks.setUrl(this.model.get('id'));
+        this.blocks.on('reset', this.processLoadedBlocks, this);
+        //this.blocks.on('add', this.registerBlock, this);
         this.blocks.fetch();
     },
 
     render: function(){
         this.$el = $(Mustache.render(Templates.get('page'), this.model.attributes));
-
+        this.delegateEvents();
     },
 
     remove: function(){
 
     },
 
-    editTitle: function(){
-
-    },
-
     addBlock: function(){
+        var newBlockModel;
+        var newBlockView;
 
+        newBlockModel = new DH.BlockModel({
+            pageId: this.model.get('dbid')
+        });
+        this.blocks.add(newBlockModel);
+
+        newBlockView = new DH.BlockView(newBlockModel);
+        newBlockView.render();
+        this.$('.blocks').append(newBlockView.$el);
+
+        newBlockView.edit();
     },
 
-    registerBlock: function(){
+    processLoadedBlocks: function(){
+        this.blocks.each(function(model){
+            var view;
+
+            view = new DH.BlockView(model);
+            view.render();
+            this.$('.blocks').append(view.$el);
+        });
+    }
+});
+
+
+/**
+ * Block representation, controls items collection
+ *
+ * @type {View}
+ */
+DH.BlockView = Backbone.View.extend({
+    model: null, //block model
+    items: null, //collection of block items
+    form: null, //block edit form element
+
+    events: {
+        'click .block-info .edit-link': 'edit',
+        'click .block-info .cancel-link': 'cancel',
+        'click .block-info .j-save-button': function(){
+            this.form.submit();
+        },
+        'click .add-item': 'addItem'
+    },
+
+    initialize: function(model){
+        this.model = model;
+
+        this.model.on('sync', function(){
+
+
+
+        }, this);
+    },
+
+    render: function(){
+        this.$el = $(Mustache.render(Templates.get('block'), this.model.attributes));
+        this.delegateEvents();
+
+        this.form = new DH.FormView();
+        this.form.$el = this.$('.block-info');
+        this.form.on('submit', this.save, this);
+
+        this.form.fieldTitle = new DH.InputView({
+            sample: 'Enter block title',
+            rules: {
+                required: {
+                    message: 'Please give block a title.'
+                }
+            }
+        });
+        this.form.fieldSlug = new DH.InputView({
+            sample: 'Enter block url slug',
+            rules: {
+                required: {
+                    message: 'Please provide the url slug for this block.'
+                }
+            }
+        });
+        this.form.fieldDescription = new DH.AreaView({
+            sample: 'Enter block description'
+        });
+
+        this.form.fieldTitle.render();
+        this.form.fieldSlug.render();
+        this.form.fieldDescription.render();
+
+        //register fields to the form
+        this.form.register(this.form.fieldTitle, this.form.$('.j-block-title-filed'));
+        this.form.register(this.form.fieldSlug, this.form.$('.j-block-url-filed'));
+        this.form.register(this.form.fieldDescription, this.form.$('.j-block-description-filed'));
+
+        //remember to bind click handler to this object
+        this.form.$('.j-lnk-cancel').click(function(){
+            this.close();
+        }.bind(this));
+        //remember to bind click handler to this object
+        this.form.$('.j-btn-add').click(function(){
+            this.form.submit();
+        }.bind(this));
+    },
+
+    edit: function(){
+        this.form.fieldTitle.val(this.model.get('title'));
+        this.form.fieldSlug.val(this.model.get('id'));
+        this.form.fieldDescription.val(this.model.get('description'));
+
+        this.form.$el.addClass('edit');
+    },
+
+    cancel: function(){
+        this.form.$el.removeClass('edit');
+
+        //clean up if new block
+        if(!this.model.get('dbid')){
+            delete this.model;
+            delete this.form;
+            this.remove();
+        }
+    },
+
+    save: function(){
+        var data = {}; //edited info hash
+        var onSave; //model save success callback
+        var onFail; //model save error callback
+        var btn = this.form.$('.j-save-button'); //button that triggered the saving
+
+        onSave = function(){
+            btn.removeClass('syncing');
+        };
+        onFail = function(){
+            btn.removeClass('syncing');
+
+            throw 'Server error while saving block';
+        };
+
+        data = {
+            title: this.form.fieldTitle.val(),
+            id: this.form.fieldSlug.val(),
+            url: this.form.fieldSlug.val(),
+            description: this.form.fieldDescription.val()
+        };
+        this.model.save(data, {
+            success: onSave,
+            error: onFail,
+            wait: true
+        });
+
+        this.form.$el.removeClass('edit');
+        btn.addClass('syncing');
+    },
+
+    addItem: function(){
 
     }
 });

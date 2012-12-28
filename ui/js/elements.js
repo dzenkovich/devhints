@@ -126,7 +126,7 @@ DH.ElementView = Backbone.View.extend({
     },
 
     //interface method
-    var: function(){
+    val: function(){
         return null;
     },
 
@@ -209,11 +209,20 @@ DH.InputView = DH.ElementView.extend({
     },
 
     val: function(Str){
+        var val = null;
+
         if(Str != null){
+            if(this.options.sample && val != this.options.sample){
+                this.$el.removeClass('sample');
+            }
             return this._$input.val(Str);
         }
         else{
-            return this._$input.val();
+            val = this._$input.val();
+            if(this.options.sample && val == this.options.sample){
+                val = '';
+            }
+            return val;
         }
     },
 
@@ -221,6 +230,43 @@ DH.InputView = DH.ElementView.extend({
         this.$el = $(Mustache.render(Templates.get('input'), this.data));
         this.delegateEvents();
         this._$input = this.$('input');
+
+        if(this.options.sample){
+            this.showSample();
+        }
+    },
+
+    focus: function(){
+        DH.ElementView.prototype.focus.call(this);
+
+        if(this.options.sample){
+            if(this._$input.val() == this.options.sample){
+                this.val('');
+                this.$el.removeClass('sample');
+            }
+        }
+    },
+
+    blur: function(){
+        var val = '';
+        DH.ElementView.prototype.blur.call(this);
+
+        if(this.options.sample){
+            this.showSample();
+        }
+    },
+
+    showSample: function(){
+        var val = '';
+
+        val = this.val();
+        if(!val){
+            this.val(this.options.sample);
+            this.$el.addClass('sample');
+        }
+        if(val == this.options.sample){
+            this.$el.addClass('sample');
+        }
     }
 });
 
@@ -246,11 +292,20 @@ DH.AreaView = DH.ElementView.extend({
     },
 
     val: function(Str){
+        var val;
+
         if(Str != null){
+            if(this.options.sample && val != this.options.sample){
+                this.$el.removeClass('sample');
+            }
             return this._$area.val(Str);
         }
         else{
-            return this._$area.val();
+            val = this._$area.val();
+            if(this.options.sample && val == this.options.sample){
+                val = '';
+            }
+            return val;
         }
     },
 
@@ -258,6 +313,42 @@ DH.AreaView = DH.ElementView.extend({
         this.$el = $(Mustache.render(Templates.get('area'), this.data));
         this.delegateEvents();
         this._$area = this.$('textarea');
+
+        if(this.options.sample){
+            this.showSample();
+        }
+    },
+
+    focus: function(){
+        DH.ElementView.prototype.focus.call(this);
+
+        if(this.options.sample){
+            if(this._$area.val() == this.options.sample){
+                this.val('');
+                this.$el.removeClass('sample');
+            }
+        }
+    },
+
+    blur: function(){
+        DH.ElementView.prototype.blur.call(this);
+
+        if(this.options.sample){
+            this.showSample();
+        }
+    },
+
+    showSample: function(){
+        var val = '';
+
+        val = this.val();
+        if(!val){
+            this.val(this.options.sample);
+            this.$el.addClass('sample');
+        }
+        if(val == this.options.sample){
+            this.$el.addClass('sample');
+        }
     }
 });
 

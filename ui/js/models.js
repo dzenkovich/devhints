@@ -29,26 +29,10 @@ DH.PageModel = Backbone.Model.extend({
  * @type {Collection}
  */
 DH.PageCollection = Backbone.Collection.extend({
-    url: 'sync/page',
+    url: 'sync/',
     model: DH.PageModel,
 
-    findByUrl: function(url){
-        return this.where({url: url}).shift();
-    }
-});
-
-/**
- * Collection of blocks, model to help page model in organizing it's blocks
- *
- * @type {Collection}
- */
-DH.BlockCollection = Backbone.Collection.extend({
-    url: 'sync/page',
-    model: DH.BlockModel,
-
-    initialize: function(url){
-        this.url = this.url + url;
-    },
+    //TODO add url validation
 
     findByUrl: function(url){
         return this.where({url: url}).shift();
@@ -61,7 +45,7 @@ DH.BlockCollection = Backbone.Collection.extend({
  *
  * @type {Model}
  */
-var BlockModel = Backbone.Model.extend({
+DH.BlockModel = Backbone.Model.extend({
     attributes: {
         title: '', //required, the block title
         url: '' //required, the url segment to bring focus to this block on page load
@@ -73,14 +57,34 @@ var BlockModel = Backbone.Model.extend({
     }
 });
 
+/**
+ * Collection of blocks, model to help page model in organizing it's blocks
+ *
+ * @type {Collection}
+ */
+DH.BlockCollection = Backbone.Collection.extend({
+    mainUrl: 'sync/',
+    url: null,
+    model: DH.BlockModel,
 
+    //TODO add url validation
+
+    setUrl: function(pageUrl){
+        this.url = this.mainUrl + pageUrl;
+        console.log(this.url);
+    },
+
+    findByUrl: function(url){
+        return this.where({url: url}).shift();
+    }
+});
 
 /**
  * Item model represents the hint or knowledge piece
  *
  * @type {*}
  */
-var ItemModel = Backbone.Model.extend({
+DH.ItemModel = Backbone.Model.extend({
     attributes: {
         title: '', //required, the block title
         url: '', //required, the url segment to bring focus to this item on page load

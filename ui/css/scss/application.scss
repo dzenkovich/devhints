@@ -16,7 +16,8 @@ $big-pad: $main-pad*2;
 $small-pad: $main-pad/2;
 $micro-pad: $small-pad/2;
 
-$line-height: (14*1.3)px;
+$font-size: 14px;
+$line-height: $font-size*1.3;
 
 @import "modal";
 @import "elements";
@@ -96,7 +97,6 @@ a {
 
                     &:hover {
                         background-color: $white;
-
                     }
                 }
             }
@@ -151,4 +151,82 @@ a {
     &.open-homepage .homepage {
         display: block;
     }
+
+    .page {
+
+        .buttons {
+            border-top: 1px solid $grey;
+            padding-top: $main-pad;
+            text-align: center;
+        }
+    }
+}
+
+.blocks {
+    list-style: none;
+    margin: $main-pad 0;
+    padding: 0;
+
+    .block {
+        border: 1px solid $txt-grey;
+        background-color: $light-grey;
+        padding: $main-pad;
+
+        .block-info {
+            position: relative;
+
+            .block-title-edit,
+            .block-url-edit,
+            .block-description-edit,
+            .block-edit-buttons {
+                display: none;
+            }
+
+            &:hover {
+                .edit-link {
+                    display: block;
+                }
+            }
+
+            &.edit {
+
+                .block-title-view,
+                .block-url-view,
+                .block-description-view {
+                    display: none;
+                }
+
+                .block-title-edit,
+                .block-url-edit,
+                .block-description-edit,
+                .block-edit-buttons {
+                    overflow:hidden;
+                    display: block;
+                }
+
+                &:hover {
+                    .edit-link {
+                        display: none;
+                    }
+                }
+            }
+
+            .edit-link {
+                display: none;
+                top: -$main-pad;
+                right: 0;
+            }
+        }
+
+        .add-item {
+            margin-top: $main-pad;
+            padding: $main-pad 0;
+            text-align: center;
+            border-top: 1px solid $grey;
+        }
+    }
+}
+
+.item {
+
 }

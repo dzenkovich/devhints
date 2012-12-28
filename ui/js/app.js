@@ -163,7 +163,7 @@ Templates.load('/ui/tpl/elements.tpl.html');
 Templates.load('/ui/tpl/modal.tpl.html');
 Templates.load('/ui/tpl/add-page-form.tpl.html');
 Templates.load('/ui/tpl/page.tpl.html');
-//Templates.load('ui/tpl/block.tpl.html');
+Templates.load('ui/tpl/block.tpl.html');
 //Templates.load('ui/tpl/item.tpl.html');
 
 $(function(){

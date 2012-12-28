@@ -12,6 +12,38 @@ $label-width: 145px;
     &:hover {
         background-color: lighten($button, 10%);
     }
+
+    &.syncing {
+        font-style: italic;
+        color: $txt-grey;
+        background-color: $light-grey;
+    }
+}
+.edit-link {
+    display: block;
+    position: absolute;
+    top: -($line-height/2);
+    padding: $small-pad;
+    color: $txt-default;
+    background-color: transparentize($logo, 0.5);
+    border: 1px solid $grey;
+    font-size: $font-size;
+    font-weight: normal;
+    cursor: pointer;
+
+    &:hover {
+        background-color: $white;
+    }
+}
+.cancel-link {
+    margin-right: $main-pad;
+    color: $txt-grey;
+    vertical-align: middle;
+    cursor: pointer;
+
+    &:hover{
+        text-decoration: underline;
+    }
 }
 
 form {
@@ -34,6 +66,7 @@ form {
     float: left;
     width: $label-width*2;
     color: $txt-default;
+    background-color: $white;
 
     div {
         border: 1px solid $grey;
@@ -48,7 +81,7 @@ form {
         }
 
         textarea {
-            height: $line-height;
+            height: $line-height*3;
         }
     }
     &.focus div {
@@ -62,6 +95,13 @@ form {
     &.focus.error div {
         border: 1px solid mix($focus, $error);
         box-shadow: 0 0 3px mix($focus, $error);
+    }
+    &.sample {
+        input,
+        textarea {
+            font-style: italic;
+            color: $txt-grey;
+        }
     }
 
     .dropdown {
