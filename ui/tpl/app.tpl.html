@@ -19,6 +19,7 @@
             <p>Page with the given URL not found.</p>
         </div>
     </div>
+    <ul class="status-bar"></ul>
 </script>
 <script id="homepage" type="text/html">
     <div class="homepage">
@@ -34,4 +35,11 @@
             {{/pages}}
         </ul>
     </div>
+</script>
+<script id="status-bar-row" type="text/html">
+    <li class="status-row {{type}}">
+        <em class="icon"></em>
+        <p class="message">{{message}}</p>
+        <a class="dismiss"></a>
+    </li>
 </script>

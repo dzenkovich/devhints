@@ -73,6 +73,10 @@ DH.FormView = Backbone.View.extend({
     tagName: 'form',
     _elements: [], //array of all form elements assigned
 
+    initialize: function(){
+        this._elements = []; //reset the array to not act as static
+    },
+
     events: {
         'keypress input': function(e){
             if(e.keyCode == 13 && $(e.srcElement).is('input')){

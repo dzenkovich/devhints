@@ -49,10 +49,13 @@
     color: #888888;
     background-color: #ededed; }
 
+.show-on-hover {
+  display: none; }
+
 .edit-link {
-  display: block;
   position: absolute;
-  top: -9.1px;
+  top: 0;
+  left: 0;
   padding: 10px;
   color: black;
   background-color: rgba(226, 190, 249, 0.5);
@@ -61,6 +64,20 @@
   font-weight: normal;
   cursor: pointer; }
   .edit-link:hover {
+    background-color: white; }
+
+.delete-link {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 10px;
+  color: black;
+  background-color: rgba(226, 190, 249, 0.5);
+  border: 1px solid lightgrey;
+  font-size: 14px;
+  font-weight: normal;
+  cursor: pointer; }
+  .delete-link:hover {
     background-color: white; }
 
 .cancel-link {
@@ -84,11 +101,11 @@ form .row {
 .field {
   float: left;
   width: 290px;
-  color: black;
-  background-color: white; }
+  color: black; }
   .field div {
     border: 1px solid lightgrey;
-    padding: 5px; }
+    padding: 5px;
+    background-color: white; }
     .field div input,
     .field div textarea {
       width: 100%;
@@ -243,8 +260,29 @@ a {
           border-top: 0; }
   .pages.open-homepage .homepage {
     display: block; }
+  .pages .page .page-info {
+    position: relative; }
+    .pages .page .page-info .page-title-edit,
+    .pages .page .page-info .page-url-edit,
+    .pages .page .page-info .page-description-edit,
+    .pages .page .page-info .page-edit-buttons {
+      display: none; }
+    .pages .page .page-info .page-edit-buttons {
+      overflow: hidden; }
+    .pages .page .page-info:hover .edit-link {
+      display: block; }
+    .pages .page .page-info.edit .page-info-view {
+      display: none; }
+    .pages .page .page-info.edit .page-title-edit,
+    .pages .page .page-info.edit .page-url-edit,
+    .pages .page .page-info.edit .page-description-edit,
+    .pages .page .page-info.edit .page-edit-buttons {
+      display: block; }
+    .pages .page .page-info.edit:hover .edit-link {
+      display: none; }
+    .pages .page .page-info .edit-link {
+      display: none; }
   .pages .page .buttons {
-    border-top: 1px solid lightgrey;
     padding-top: 20px;
     text-align: center; }
 
@@ -263,26 +301,50 @@ a {
       .blocks .block .block-info .block-description-edit,
       .blocks .block .block-info .block-edit-buttons {
         display: none; }
-      .blocks .block .block-info:hover .edit-link {
+      .blocks .block .block-info .block-edit-buttons {
+        overflow: hidden; }
+      .blocks .block .block-info:hover .show-on-hover {
         display: block; }
-      .blocks .block .block-info.edit .block-title-view,
-      .blocks .block .block-info.edit .block-url-view,
-      .blocks .block .block-info.edit .block-description-view {
+      .blocks .block .block-info.edit .block-info-view {
         display: none; }
       .blocks .block .block-info.edit .block-title-edit,
       .blocks .block .block-info.edit .block-url-edit,
       .blocks .block .block-info.edit .block-description-edit,
       .blocks .block .block-info.edit .block-edit-buttons {
-        overflow: hidden;
         display: block; }
-      .blocks .block .block-info.edit:hover .edit-link {
+      .blocks .block .block-info.edit:hover .show-on-hover {
         display: none; }
       .blocks .block .block-info .edit-link {
-        display: none;
-        top: -20px;
-        right: 0; }
+        display: none; }
     .blocks .block .add-item {
       margin-top: 20px;
       padding: 20px 0;
-      text-align: center;
-      border-top: 1px solid lightgrey; }
+      text-align: center; }
+
+.items {
+  list-style: none;
+  margin: 10px 0;
+  padding: 0; }
+  .items .item {
+    border: 1px dashed lightgrey;
+    padding: 10px; }
+    .items .item .item-info {
+      position: relative; }
+      .items .item .item-info .item-title-edit,
+      .items .item .item-info .item-description-edit,
+      .items .item .item-info .item-edit-buttons {
+        display: none; }
+      .items .item .item-info .item-edit-buttons {
+        overflow: hidden; }
+      .items .item .item-info:hover .show-on-hover {
+        display: block; }
+      .items .item .item-info.edit .item-info-view {
+        display: none; }
+      .items .item .item-info.edit .item-title-edit,
+      .items .item .item-info.edit .item-description-edit,
+      .items .item .item-info.edit .item-edit-buttons {
+        display: block; }
+      .items .item .item-info.edit:hover .show-on-hover {
+        display: none; }
+      .items .item .item-info .edit-link {
+        display: none; }

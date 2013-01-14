@@ -5,6 +5,21 @@
  */
 var DH = DH || {}; //ensure namespace
 
+DH.StatusBar = Backbone.View.extend({
+    rows: [], //array of visible rows
+    _rowTpl: null, //saves tpl for renders
+
+    initialize: function(container){
+        this.$el = container;
+    },
+
+    showRow: function(){
+        var row;
+
+        row = $();
+    }
+});
+
 /**
  * The main view of application: page navigation/creation/deletion and etc
  *
@@ -25,6 +40,9 @@ DH.AppView = Backbone.View.extend({
     initialize: function(){
         this.pages = new DH.PageCollection();
         this.pages.on('add', this.registerPage, this);
+        this.pages.on('change:url', function(model){
+            this.router.navigate(model.get('url'));
+        }, this);
         this.pages.fetch({
             success: function(pages, response){
                 this.render();
@@ -35,6 +53,8 @@ DH.AppView = Backbone.View.extend({
                 this.render();
             }.bind(this)
         });
+
+        DH.StatusBar = new DH.StatusBar();
     },
 
     setRouter: function(){
@@ -123,9 +143,6 @@ DH.AppView = Backbone.View.extend({
             if(pageModel){
                 var pageView = new DH.PageView(pageModel);
                 pageView.render();
-                pageModel.on('change', function(){
-                    pageView.render();
-                });
                 pageView.$el.hide().appendTo(this.$('.pages'));
             }
         }
@@ -255,10 +272,14 @@ DH.AddPageModalView = DH.ModalView.extend({
  */
 DH.PageView = Backbone.View.extend({
     model: null, //page model
-    blocks: null, //collection of page blocks
-    form: null, //page edit form element //TODO add page editing
+    form: null, //page edit form element
 
     events: {
+        'click .page-info .edit-link': 'edit',
+        'click .page-info .cancel-link': 'cancel',
+        'click .page-info .j-save-button': function(){
+            this.form.submit();
+        },
         'click .add-block': 'addBlock'
     },
 
@@ -266,17 +287,107 @@ DH.PageView = Backbone.View.extend({
         this.model = model;
         //this.model.on('change', this.render, this);
         this.model.on('destroy', this.remove, this);
+        this.model.on('sync', function(){
+            this._updateInfo();
+        }, this);
 
-        this.blocks = new DH.BlockCollection();
-        this.blocks.setUrl(this.model.get('id'));
-        this.blocks.on('reset', this.processLoadedBlocks, this);
-        //this.blocks.on('add', this.registerBlock, this);
-        this.blocks.fetch();
+        this.model.blocks.on('reset', this.processLoadedBlocks, this);
+        this.model.blocks.fetch();
     },
 
     render: function(){
         this.$el = $(Mustache.render(Templates.get('page'), this.model.attributes));
+        this._updateInfo();
         this.delegateEvents();
+
+        this.form = new DH.FormView();
+        this.form.$el = this.$('.page-info');
+        this.form.on('submit', this.save, this);
+
+        this.form.fieldTitle = new DH.InputView({
+            sample: 'Enter page title',
+            rules: {
+                required: {
+                    message: 'Please give page a title.'
+                }
+            }
+        });
+        this.form.fieldSlug = new DH.InputView({
+            sample: 'Enter page url slug',
+            rules: {
+                required: {
+                    message: 'Please provide the url slug for this page.'
+                }
+            }
+        });
+        this.form.fieldDescription = new DH.AreaView({
+            sample: 'Enter page description'
+        });
+
+        this.form.fieldTitle.render();
+        this.form.fieldSlug.render();
+        this.form.fieldDescription.render();
+
+        //register fields to the form
+        this.form.register(this.form.fieldTitle, this.form.$('.j-page-title-filed'));
+        this.form.register(this.form.fieldSlug, this.form.$('.j-page-url-filed'));
+        this.form.register(this.form.fieldDescription, this.form.$('.j-page-description-filed'));
+
+        //remember to bind click handler to this object
+        this.form.$('.j-lnk-cancel').click(function(){
+            this.close();
+        }.bind(this));
+        //remember to bind click handler to this object
+        this.form.$('.j-btn-add').click(function(){
+            this.form.submit();
+        }.bind(this));
+    },
+
+    _updateInfo: function(){
+        this.$('.page-info-view').html(Mustache.render(Templates.get('page-info'), this.model.attributes));
+    },
+
+    edit: function(){
+        this.form.fieldTitle.val(this.model.get('title'));
+        this.form.fieldSlug.val(this.model.get('url'));
+        this.form.fieldDescription.val(this.model.get('description'));
+
+        this.form.$el.addClass('edit');
+    },
+
+    cancel: function(){
+        this.form.$el.removeClass('edit');
+    },
+
+    save: function(){
+        var data; //edited info hash
+        var onSave; //model save success callback
+        var onFail; //model save error callback
+        var btn = this.form.$('.j-save-button'); //button that triggered the saving
+
+        onSave = function(){
+            this.$el.removeClass('syncing');
+            debugger;
+        }.bind(this);
+        onFail = function(){
+            this.$el.removeClass('syncing');
+
+            throw 'Server error while saving block';
+        }.bind(this);
+
+        data = {
+            title: this.form.fieldTitle.val(),
+            url: this.form.fieldSlug.val(),
+            description: this.form.fieldDescription.val()
+        };
+        this.model.save(data, {
+            success: onSave,
+            error: onFail,
+            wait: true
+        });
+
+        this.form.$el.removeClass('edit');
+        this.$el.addClass('syncing');
     },
 
     remove: function(){
@@ -288,9 +399,9 @@ DH.PageView = Backbone.View.extend({
         var newBlockView;
 
         newBlockModel = new DH.BlockModel({
-            pageId: this.model.get('dbid')
+            pageId: this.model.get('id')
         });
-        this.blocks.add(newBlockModel);
+        this.model.blocks.add(newBlockModel);
 
         newBlockView = new DH.BlockView(newBlockModel);
         newBlockView.render();
@@ -300,7 +411,7 @@ DH.PageView = Backbone.View.extend({
     },
 
     processLoadedBlocks: function(){
-        this.blocks.each(function(model){
+        this.model.blocks.each(function(model){
             var view;
 
             view = new DH.BlockView(model);
@@ -310,7 +421,6 @@ DH.PageView = Backbone.View.extend({
     }
 });
 
-
 /**
  * Block representation, controls items collection
  *
@@ -318,11 +428,11 @@ DH.PageView = Backbone.View.extend({
  */
 DH.BlockView = Backbone.View.extend({
     model: null, //block model
-    items: null, //collection of block items
     form: null, //block edit form element
 
     events: {
         'click .block-info .edit-link': 'edit',
+        'click .block-info .delete-link': 'delete',
         'click .block-info .cancel-link': 'cancel',
         'click .block-info .j-save-button': function(){
             this.form.submit();
@@ -334,14 +444,17 @@ DH.BlockView = Backbone.View.extend({
         this.model = model;
 
         this.model.on('sync', function(){
-
-
-
+            this._updateInfo();
         }, this);
+
+        this.model.items.on('reset', this.processLoadedItems, this);
+        //this.blocks.on('add', this.registerBlock, this);
+        this.model.items.fetch();
     },
 
     render: function(){
         this.$el = $(Mustache.render(Templates.get('block'), this.model.attributes));
+        this._updateInfo();
         this.delegateEvents();
 
         this.form = new DH.FormView();
@@ -387,9 +500,13 @@ DH.BlockView = Backbone.View.extend({
         }.bind(this));
     },
 
+    _updateInfo: function(){
+        this.$('.block-info-view').html(Mustache.render(Templates.get('block-info'), this.model.attributes));
+    },
+
     edit: function(){
         this.form.fieldTitle.val(this.model.get('title'));
-        this.form.fieldSlug.val(this.model.get('id'));
+        this.form.fieldSlug.val(this.model.get('url'));
         this.form.fieldDescription.val(this.model.get('description'));
 
         this.form.$el.addClass('edit');
@@ -399,15 +516,15 @@ DH.BlockView = Backbone.View.extend({
         this.form.$el.removeClass('edit');
 
         //clean up if new block
-        if(!this.model.get('dbid')){
+        if(!this.model || !this.model.get('id')){
             delete this.model;
             delete this.form;
-            this.remove();
+            this.delete();
         }
     },
 
     save: function(){
-        var data = {}; //edited info hash
+        var data; //edited info hash
         var onSave; //model save success callback
         var onFail; //model save error callback
         var btn = this.form.$('.j-save-button'); //button that triggered the saving
@@ -423,7 +540,6 @@ DH.BlockView = Backbone.View.extend({
 
         data = {
             title: this.form.fieldTitle.val(),
-            id: this.form.fieldSlug.val(),
             url: this.form.fieldSlug.val(),
             description: this.form.fieldDescription.val()
         };
@@ -437,7 +553,164 @@ DH.BlockView = Backbone.View.extend({
         btn.addClass('syncing');
     },
 
-    addItem: function(){
+    delete: function(){
+        if(this.model){
+            this.model.destroy();
+        }
+        this.remove();
+    },
 
+    addItem: function(){
+        var newItemModel;
+        var newItemView;
+
+        newItemModel = new DH.ItemModel({
+            blockId: this.model.get('id')
+        });
+        this.model.items.add(newItemModel);
+
+        newItemView = new DH.ItemView(newItemModel);
+        newItemView.render();
+        this.$('.items').append(newItemView.$el);
+
+        newItemView.edit();
+    },
+
+    processLoadedItems: function(){
+        this.model.items.each(function(model){
+            var view;
+
+            view = new DH.ItemView(model);
+            view.render();
+            this.$('.items').append(view.$el);
+        });
     }
+});
+
+/**
+ * Item representation, controls item information
+ *
+ * @type {View}
+ */
+DH.ItemView = Backbone.View.extend({
+    model: null, //block model
+    form: null, //block edit form element
+
+    events: {
+        'click .item-info .edit-link': 'edit',
+        'click .item-info .delete-link': 'delete',
+        'click .item-info .cancel-link': 'cancel',
+        'click .item-info .j-save-button': function(){
+            this.form.submit();
+        }
+    },
+
+    initialize: function(model){
+        this.model = model;
+
+        this.model.on('sync', function(){
+            this._updateInfo();
+        }, this);
+    },
+
+    render: function(){
+        this.$el = $(Mustache.render(Templates.get('item'), this.model.attributes));
+        this._updateInfo();
+        this.delegateEvents();
+
+        this.form = new DH.FormView();
+        this.form.$el = this.$('.item-info');
+        this.form.on('submit', this.save, this);
+
+        this.form.fieldTitle = new DH.InputView({
+            sample: 'Enter item title',
+            rules: {
+                required: {
+                    message: 'Please give item a title.'
+                }
+            }
+        });
+        this.form.fieldDescription = new DH.AreaView({
+            sample: 'Enter item description'
+        });
+
+        this.form.fieldTitle.render();
+        this.form.fieldDescription.render();
+
+        //register fields to the form
+        this.form.register(this.form.fieldTitle, this.form.$('.j-item-title-filed'));
+        this.form.register(this.form.fieldDescription, this.form.$('.j-item-description-filed'));
+
+        //remember to bind click handler to this object
+        this.form.$('.j-lnk-cancel').click(function(){
+            this.close();
+        }.bind(this));
+        //remember to bind click handler to this object
+        this.form.$('.j-btn-add').click(function(){
+            this.form.submit();
+        }.bind(this));
+    },
+
+    _updateInfo: function(){
+        this.$('.item-info-view').html(Mustache.render(Templates.get('item-info'), this.model.attributes));
+    },
+
+    edit: function(){
+        this.form.fieldTitle.val(this.model.get('title'));
+        this.form.fieldDescription.val(this.model.get('description'));
+
+        this.form.$el.addClass('edit');
+    },
+
+    cancel: function(){
+        this.form.$el.removeClass('edit');
+
+        //clean up if new block
+        if(!this.model || !this.model.get('id')){
+            delete this.model;
+            delete this.form;
+            this.delete();
+        }
+    },
+
+    save: function(){
+        var data; //edited info hash
+        var url; //url created from title
+        var onSave; //model save success callback
+        var onFail; //model save error callback
+        var btn = this.form.$('.j-save-button'); //button that triggered the saving
+
+        onSave = function(){
+            btn.removeClass('syncing');
+        };
+        onFail = function(){
+            btn.removeClass('syncing');
+
+            throw 'Server error while saving block';
+        };
+
+        url = this.form.fieldTitle.val().toLowerCase().replace(/[^\w\s]/g, '').trim().replace(/\s/g, '-');
+
+        data = {
+            title: this.form.fieldTitle.val(),
+            url: url,
+            description: this.form.fieldDescription.val()
+        };
+        this.model.save(data, {
+            success: onSave,
+            error: onFail,
+            wait: true
+        });
+
+        this.form.$el.removeClass('edit');
+        btn.addClass('syncing');
+    },
+
+    delete: function(){
+        if(this.model){
+            this.model.destroy();
+        }
+        this.remove();
+    }
+
 });

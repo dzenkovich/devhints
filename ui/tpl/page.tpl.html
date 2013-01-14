@@ -1,8 +1,25 @@
 <script id="page" type="text/html">
     <div class="page">
-        <h1>{{title}}</h1>
-        <p class="url">{{url}}</p>
-        <p class="description">{{description}}</p>
+        <form class="page-info">
+            <a class="edit-link">edit</a>
+
+            <div class="page-info-view"></div>
+
+            <div class="row page-title-edit">
+                <div class="j-page-title-filed"></div>
+            </div>
+            <div class="row page-url-edit">
+                <div class="j-page-url-filed"></div>
+            </div>
+            <div class="row page-description-edit">
+                <div class="j-page-description-filed"></div>
+            </div>
+
+            <div class="page-edit-buttons">
+                <a class="cancel-link">cancel</a>
+                <a class="button j-save-button">Save</a>
+            </div>
+        </form>
 
         <ul class="blocks"></ul>
 
@@ -10,4 +27,9 @@
             <a class="button add-block">Add Block</a>
         </div>
     </div>
+</script>
+<script id="page-info" type="text/html">
+    <h1>{{title}}</h1>
+    <p class="url">{{url}}</p>
+    <p class="description">{{description}}</p>
 </script>

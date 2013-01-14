@@ -19,10 +19,29 @@ $label-width: 145px;
         background-color: $light-grey;
     }
 }
+.show-on-hover {
+    display: none;
+}
 .edit-link {
-    display: block;
     position: absolute;
-    top: -($line-height/2);
+    top: 0;
+    left: 0;
+    padding: $small-pad;
+    color: $txt-default;
+    background-color: transparentize($logo, 0.5);
+    border: 1px solid $grey;
+    font-size: $font-size;
+    font-weight: normal;
+    cursor: pointer;
+
+    &:hover {
+        background-color: $white;
+    }
+}
+.delete-link {
+    position: absolute;
+    top: 0;
+    right: 0;
     padding: $small-pad;
     color: $txt-default;
     background-color: transparentize($logo, 0.5);
@@ -66,11 +85,11 @@ form {
     float: left;
     width: $label-width*2;
     color: $txt-default;
-    background-color: $white;
 
     div {
         border: 1px solid $grey;
         padding: $micro-pad;
+        background-color: $white;
 
         input,
         textarea {

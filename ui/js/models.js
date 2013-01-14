@@ -19,7 +19,8 @@ DH.PageModel = Backbone.Model.extend({
     blocks: [], //optional, collection of block models
 
     initialize: function(data){
-        this.set('id', data.url);
+        this.blocks = new DH.BlockCollection();
+        this.blocks.setUrl(this.url());
     }
 });
 
@@ -31,8 +32,6 @@ DH.PageModel = Backbone.Model.extend({
 DH.PageCollection = Backbone.Collection.extend({
     url: 'sync/',
     model: DH.PageModel,
-
-    //TODO add url validation
 
     findByUrl: function(url){
         return this.where({url: url}).shift();
@@ -52,8 +51,9 @@ DH.BlockModel = Backbone.Model.extend({
     },
     items: [], //optional, collection of item models
 
-    change: function(){
-
+    initialize: function(data){
+        this.items = new DH.ItemCollection();
+        this.items.setUrl(this.url());
     }
 });
 
@@ -63,15 +63,11 @@ DH.BlockModel = Backbone.Model.extend({
  * @type {Collection}
  */
 DH.BlockCollection = Backbone.Collection.extend({
-    mainUrl: 'sync/',
     url: null,
     model: DH.BlockModel,
 
-    //TODO add url validation
-
-    setUrl: function(pageUrl){
-        this.url = this.mainUrl + pageUrl;
-        console.log(this.url);
+    setUrl: function(pageUrl){ //TODO add url validation
+        this.url = pageUrl;
     },
 
     findByUrl: function(url){
@@ -87,11 +83,24 @@ DH.BlockCollection = Backbone.Collection.extend({
 DH.ItemModel = Backbone.Model.extend({
     attributes: {
         title: '', //required, the block title
-        url: '', //required, the url segment to bring focus to this item on page load
         content: '' //required the description of the hint
+    }
+});
+
+/**
+ * Collection of items, model to help block model in organizing it's items
+ *
+ * @type {Collection}
+ */
+DH.ItemCollection = Backbone.Collection.extend({
+    url: null,
+    model: DH.BlockModel,
+
+    setUrl: function(blockUrl){ //TODO add url validation
+        this.url = blockUrl;
     },
 
-    change: function(){
-
+    findByUrl: function(url){
+        return this.where({url: url}).shift();
     }
 });

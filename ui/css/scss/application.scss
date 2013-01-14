@@ -154,8 +154,52 @@ a {
 
     .page {
 
+        .page-info {
+            position: relative;
+
+            .page-title-edit,
+            .page-url-edit,
+            .page-description-edit,
+            .page-edit-buttons {
+                display: none;
+            }
+
+            .page-edit-buttons {
+                overflow:hidden;
+            }
+
+            &:hover {
+                .edit-link {
+                    display: block;
+                }
+            }
+
+            &.edit {
+
+                .page-info-view {
+                    display: none;
+                }
+
+                .page-title-edit,
+                .page-url-edit,
+                .page-description-edit,
+                .page-edit-buttons {
+                    display: block;
+                }
+
+                &:hover {
+                    .edit-link {
+                        display: none;
+                    }
+                }
+            }
+
+            .edit-link {
+                display: none;
+            }
+        }
+
         .buttons {
-            border-top: 1px solid $grey;
             padding-top: $main-pad;
             text-align: center;
         }
@@ -182,17 +226,19 @@ a {
                 display: none;
             }
 
+            .block-edit-buttons {
+                overflow:hidden;
+            }
+
             &:hover {
-                .edit-link {
+                .show-on-hover {
                     display: block;
                 }
             }
 
             &.edit {
 
-                .block-title-view,
-                .block-url-view,
-                .block-description-view {
+                .block-info-view {
                     display: none;
                 }
 
@@ -200,12 +246,11 @@ a {
                 .block-url-edit,
                 .block-description-edit,
                 .block-edit-buttons {
-                    overflow:hidden;
                     display: block;
                 }
 
                 &:hover {
-                    .edit-link {
+                    .show-on-hover {
                         display: none;
                     }
                 }
@@ -213,8 +258,6 @@ a {
 
             .edit-link {
                 display: none;
-                top: -$main-pad;
-                right: 0;
             }
         }
 
@@ -222,11 +265,60 @@ a {
             margin-top: $main-pad;
             padding: $main-pad 0;
             text-align: center;
-            border-top: 1px solid $grey;
         }
     }
 }
 
-.item {
+.items {
+    list-style: none;
+    margin: $small-pad 0;
+    padding: 0;
 
+    .item {
+        border: 1px dashed $grey;
+        padding: $small-pad;
+
+        .item-info {
+            position: relative;
+
+            .item-title-edit,
+            .item-description-edit,
+            .item-edit-buttons {
+                display: none;
+            }
+
+            .item-edit-buttons {
+                overflow:hidden;
+            }
+
+            &:hover {
+                .show-on-hover {
+                    display: block;
+                }
+            }
+
+            &.edit {
+
+                .item-info-view {
+                    display: none;
+                }
+
+                .item-title-edit,
+                .item-description-edit,
+                .item-edit-buttons {
+                    display: block;
+                }
+
+                &:hover {
+                    .show-on-hover {
+                        display: none;
+                    }
+                }
+            }
+
+            .edit-link {
+                display: none;
+            }
+        }
+    }
 }
