@@ -1,25 +1,31 @@
 /**
- * Application bootstrap file
+ * @fileOverview Developer Hints bootstrap file, handles application start and holds utilities such as Resources Loader
+ * @author <a href="http://dzenkovich.com">Denis Zenkovich</a>
+ * @version 0.1
+ */
+
+/**
+ * DevHints Namespace
  *
- * @author Denis Zenkovich
+ * @type {Namespace}
  */
 var DH = DH || {}; //ensure namespace
 
 /**
- * Resources loader
+ * Resources loader Singleton
  *
- * @type {Object} Singleton
+ * @type {Object}
  */
 var Loader = (function(){
     var _allScripts = []; //saves all loaded scripts just in case
 
     return {
         /**
-         * load the requested script
+         * loads the requested script or batch of scripts and toggles provided callback when all done
          *
-         * @param url
-         * @param callback
-         * @param context
+         * @param {Array|String} url Single url string or array of items to load in a batch
+         * @param {Function} callback The function to execute when loading finished
+         * @param {Object} context If provided callback will be run as if method of this object
          */
         load: function(url, callback, context){
             var i;
@@ -30,8 +36,11 @@ var Loader = (function(){
 
             if(!$.isArray(url)) url = [url];
 
+            /**
+             * All scripts loaded callback
+             */
             done = function(){
-                //run the callback, pass all loaded scripts and let it decide if the failed or not
+                //run the callback, pass all loaded scripts and let it decide if loading failed or not
                 if(typeof callback == 'function'){
                     if(typeof context == 'object'){
                         callback.call(context, scripts);
@@ -42,6 +51,12 @@ var Loader = (function(){
                 }
             };
 
+            /**
+             * Load script/template item
+             *
+             * @param {String} url
+             * @return {Object} Object of item being loaded
+             */
             getScript = function(url){
                 var script;
                 var extension;
@@ -74,6 +89,7 @@ var Loader = (function(){
                     }).get(0);
                     document.body.appendChild(scriptTag);
                 }
+                //use JS ajax to load templates
                 else{
                     $.ajax({
                         url: url,
@@ -96,6 +112,7 @@ var Loader = (function(){
                 return script;
             };
 
+            //start loading
             for(i = 0; i < url.length; i++){
                 scripts[url[i]] = getScript(url[i]);
             }
@@ -114,7 +131,7 @@ var Templates = {
     /**
      * load the file and get templates from it
      *
-     * @param url
+     * @param {String} url
      */
     load: function(url){
         Loader.load(url, function(scripts){
@@ -129,7 +146,7 @@ var Templates = {
     /**
      * parse given html chunk for script tags that are templates
      *
-     * @param html
+     * @param {String} html html to be parsed
      */
     parse: function(html){
         $(html).each(function(){
@@ -143,8 +160,8 @@ var Templates = {
     /**
      * Return the template by the given name
      *
-     * @param {String} name
-     * @return {String} template
+     * @param {String} name template name
+     * @return {String} template the template object
      */
     get: function(name){
         if(this.templates[name]){

@@ -1,7 +1,13 @@
 /**
- * UI Blocks data retrival and saving logic
+ * @fileOverview Developer Hints Models section, file containing all the model objects for the devhints project
+ * @author <a href="http://dzenkovich.com">Denis Zenkovich</a>
+ * @version 0.1
+ */
+
+/**
+ * DevHints Namespace
  *
- * @author Denis Zenkovich
+ * @type {Namespace}
  */
 var DH = DH || {}; //ensure namespace
 
@@ -9,6 +15,7 @@ var DH = DH || {}; //ensure namespace
  * Page model represents a single page filled with various blocks of information
  * Pages can be created added from the top bar and navigated at the topbar menu
  *
+ * @param {Object} data Initial model attributes
  * @type {Model}
  */
 DH.PageModel = Backbone.Model.extend({
@@ -18,6 +25,9 @@ DH.PageModel = Backbone.Model.extend({
     },
     blocks: [], //optional, collection of block models
 
+    /**
+     * @constructs
+     */
     initialize: function(data){
         this.blocks = new DH.BlockCollection();
         this.blocks.setUrl(this.url());
@@ -27,12 +37,18 @@ DH.PageModel = Backbone.Model.extend({
 /**
  * Collection of pages, utility model to help creating navigation between pages and DB sync calls
  *
- * @type {Collection}
+ * @type {Object}
  */
 DH.PageCollection = Backbone.Collection.extend({
     url: 'sync/',
     model: DH.PageModel,
 
+    /**
+     * Find model in a collection having the url specified
+     *
+     * @param {String} url
+     * @return {Object} found Model
+     */
     findByUrl: function(url){
         return this.where({url: url}).shift();
     }
@@ -42,7 +58,8 @@ DH.PageCollection = Backbone.Collection.extend({
  * Block model represent the section containing various reference and knowledge items
  * You add blocks to the page
  *
- * @type {Model}
+ * @param {Object} data Initial model attributes
+ * @type {Object} found Model
  */
 DH.BlockModel = Backbone.Model.extend({
     attributes: {
@@ -51,6 +68,9 @@ DH.BlockModel = Backbone.Model.extend({
     },
     items: [], //optional, collection of item models
 
+    /**
+     * @constructs
+     */
     initialize: function(data){
         this.items = new DH.ItemCollection();
         this.items.setUrl(this.url());
@@ -60,16 +80,27 @@ DH.BlockModel = Backbone.Model.extend({
 /**
  * Collection of blocks, model to help page model in organizing it's blocks
  *
- * @type {Collection}
+ * @type {Object}
  */
 DH.BlockCollection = Backbone.Collection.extend({
     url: null,
     model: DH.BlockModel,
 
+    /**
+     * Update model url
+     *
+     * @param {String} pageUrl
+     */
     setUrl: function(pageUrl){ //TODO add url validation
         this.url = pageUrl;
     },
 
+    /**
+     * Find model in a collection having the url specified
+     *
+     * @param {String} url
+     * @return {Object} found Model
+     */
     findByUrl: function(url){
         return this.where({url: url}).shift();
     }
@@ -78,7 +109,7 @@ DH.BlockCollection = Backbone.Collection.extend({
 /**
  * Item model represents the hint or knowledge piece
  *
- * @type {*}
+ * @type {Object}
  */
 DH.ItemModel = Backbone.Model.extend({
     attributes: {
@@ -90,16 +121,27 @@ DH.ItemModel = Backbone.Model.extend({
 /**
  * Collection of items, model to help block model in organizing it's items
  *
- * @type {Collection}
+ * @type {Object}
  */
 DH.ItemCollection = Backbone.Collection.extend({
     url: null,
     model: DH.BlockModel,
 
+    /**
+     * Update model url
+     *
+     * @param {String} blockUrl
+     */
     setUrl: function(blockUrl){ //TODO add url validation
         this.url = blockUrl;
     },
 
+    /**
+     * Find model in a collection having the url specified
+     *
+     * @param {String} url
+     * @return {Object} found Model
+     */
     findByUrl: function(url){
         return this.where({url: url}).shift();
     }

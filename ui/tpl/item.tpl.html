@@ -1,0 +1,48 @@
+<script id="item" type="text/html">
+    <li class="item">
+        <form class="item-info">
+            <a class="show-on-hover edit-link">edit</a>
+            <a class="show-on-hover delete-link">delete</a>
+
+            <div class="item-info-view"></div>
+
+            <div class="row item-title-edit">
+                <div class="j-item-title-filed"></div>
+            </div>
+            <div class="row item-description-edit">
+                <div class="j-item-description-filed"></div>
+            </div>
+
+            <div class="item-edit-buttons">
+                <a class="cancel-link">cancel</a>
+                <a class="button j-save-button">Save</a>
+            </div>
+        </form>
+
+        <div class="browser-support-container"></div>
+    </li>
+</script>
+<script id="item-info" type="text/html">
+    <p class="item-title-view">{{title}}</p>
+    <p class="item-description-view">{{description}}</p>
+</script>
+<script id="browser-support" type="text/html">
+    <ul>
+        <li class="{{chrome}}">
+            <img src="/ui/img/browsers/chrome.png"/>
+            <p>{{chromeVersion}}</p>
+        </li>
+        <li class="{{firefox}}">
+            <img src="/ui/img/browsers/firefox.png"/>
+            <p>{{firefoxVersion}}</p>
+        </li>
+        <li class="{{safari}}">
+            <img src="/ui/img/browsers/firefox.png"/>
+            <p>{{safariVersion}}</p>
+        </li>
+        <li class="{{ie}}">
+            <img src="/ui/img/browsers/IE.png"/>
+            <p>{{ieVersion}}</p>
+        </li>
+    </ul>
+</script>

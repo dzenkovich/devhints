@@ -1,14 +1,20 @@
 /**
- * Various elements, primitive construction blocks like form fields, dropdowns and etc.
+ * @fileOverview Developer Hints Various elements, primitive construction blocks like form fields, dropdowns and etc
+ * @author <a href="http://dzenkovich.com">Denis Zenkovich</a>
+ * @version 0.1
+ */
+
+/**
+ * DevHints Namespace
  *
- * @author Denis Zenkovich
+ * @type {Namespace}
  */
 var DH = DH || {}; //ensure namespace
 
 /**
- * Generic modal window
+ * Generic modal window view object
  *
- * @type {*}
+ * @type {Object}
  */
 DH.ModalView = Backbone.View.extend({
     tagName: 'div',
@@ -16,6 +22,11 @@ DH.ModalView = Backbone.View.extend({
     _$content: null, //JQ modal content element
     _$header: null, //JQ modal header element
 
+    /**
+     * Place the model in the middle of the screen
+     *
+     * @private
+     */
     _position: function(){
         var Size;
         var Top;
@@ -38,6 +49,9 @@ DH.ModalView = Backbone.View.extend({
         });
     },
 
+    /**
+     * @constructs
+     */
     initialize: function(){
         //create page overlay if none exist yet, use it as a static property through all modals
         if(!DH.ModalView._$cover){
@@ -45,6 +59,9 @@ DH.ModalView = Backbone.View.extend({
         }
     },
 
+    /**
+     * Render modal template
+     */
     render: function(){
         this.$el = $(Mustache.render(Templates.get('modal'), this.data));
         this._$content = this.$('.content');
@@ -53,26 +70,45 @@ DH.ModalView = Backbone.View.extend({
         this.$el.appendTo(document.body);
     },
 
+    /**
+     * Update modal title with the given text
+     *
+     * @param {String} title
+     */
     setTitle: function(title){
         this.$('.title').html(title);
     },
 
+    /**
+     * Show the modal
+     */
     open: function(){
         this._position();
         this.$el.show();
         DH.ModalView._$cover.show();
     },
 
+    /**
+     * Hide the modal
+     */
     close: function(){
         this.$el.hide();
         DH.ModalView._$cover.hide();
     }
 });
 
+/**
+ * Generic form view object
+ *
+ * @type {Object}
+ */
 DH.FormView = Backbone.View.extend({
     tagName: 'form',
     _elements: [], //array of all form elements assigned
 
+    /**
+     * @constructs
+     */
     initialize: function(){
         this._elements = []; //reset the array to not act as static
     },
@@ -85,10 +121,19 @@ DH.FormView = Backbone.View.extend({
         }
     },
 
+    /**
+     * OnSubmit actions
+     */
     submit: function(){
         if(this.validate()) this.trigger('submit');
     },
 
+    /**
+     * Add field to the form, and register it for validator
+     *
+     * @param {Object} Field Element View object
+     * @param {Object} ReplaceElement Dome element to be replaced with Element DOM
+     */
     register: function(Field, ReplaceElement){
         if(ReplaceElement){
             ReplaceElement.replaceWith(Field.$el);
@@ -97,6 +142,11 @@ DH.FormView = Backbone.View.extend({
         this._elements.push(Field);
     },
 
+    /**
+     * Validate the form elements
+     *
+     * @return {Boolean}
+     */
     validate: function(){
         var i = 0;
         var errors = 0;
@@ -107,6 +157,11 @@ DH.FormView = Backbone.View.extend({
         return errors === 0;
     }
 });
+/**
+ * Available form validation checks
+ *
+ * @type {Object}
+ */
 DH.FormView.checks = {
     required: {
         validator: function(val){
@@ -118,32 +173,47 @@ DH.FormView.checks = {
 /**
  * Common functionality of the form element, every real element inherits this object
  *
- * @type {Constructor Function}
+ * @type {Object}
  */
 DH.ElementView = Backbone.View.extend({
     checks: [], //list of validation checks assigned
     _$error: null, //error container element
     _lastVal: null, //last known value of the element
 
+    /**
+     * @constructs
+     */
     initialize: function(){
         if(this.options.rules) this.setRules(this.options.rules);
     },
 
-    //interface method
+    /**
+     * @interface
+     * @return {*}
+     */
     val: function(){
         return null;
     },
 
+    /**
+     * OnFocus actions
+     */
     focus: function(){
         this.$el.addClass('focus');
     },
 
+    /**
+     * OnBlur actions
+     */
     blur: function(){
         this.$el.removeClass('focus');
         this.validate();
         this._lastVal = this.val();
     },
 
+    /**
+     * OnChange actions, also removes the error highlight
+     */
     change: function(){
         var curVal = this.val();
 
@@ -152,6 +222,11 @@ DH.ElementView = Backbone.View.extend({
         }
     },
 
+    /**
+     * Apply error highlight and show message
+     *
+     * @param {String} message Error to display
+     */
     setError: function(message){
         if(!this._$error){
             this._$error = this.$('.error');
@@ -160,11 +235,18 @@ DH.ElementView = Backbone.View.extend({
         this._$error.html(message);
     },
 
+    /**
+     * Remove all error messages
+     */
     clearError: function(){
         this.$el.removeClass('error');
         if(this._$error) this._$error.html('');
     },
 
+    /**
+     * Assign validations rules for this element
+     * @param {Array} rules Array of rule objects
+     */
     setRules: function(rules){
         var i;
 
@@ -178,6 +260,11 @@ DH.ElementView = Backbone.View.extend({
         }
     },
 
+    /**
+     * Run validations assigned
+     *
+     * @return {Boolean}
+     */
     validate: function(){
         var i=0;
         var val = this.val();
@@ -195,7 +282,7 @@ DH.ElementView = Backbone.View.extend({
 /**
  * Input field element
  *
- * @type {Form Element}
+ * @type {Object} Form Element
  */
 DH.InputView = DH.ElementView.extend({
     _$input: null, //html input
@@ -206,12 +293,21 @@ DH.InputView = DH.ElementView.extend({
         'keyup input': 'change'
     },
 
+    /**
+     * @constructs
+     */
     initialize: function(){
         //reset checks list, or .prototype pointer would make it as a static across all children
         this.checks = [];
         DH.ElementView.prototype.initialize.call(this)
     },
 
+    /**
+     * Get value if no parameters provided, Set value if provided
+     *
+     * @param {String} Str Optional, if present value will be set
+     * @return {String}
+     */
     val: function(Str){
         var val = null;
 
@@ -230,6 +326,9 @@ DH.InputView = DH.ElementView.extend({
         }
     },
 
+    /**
+     * Render input element template
+     */
     render: function(){
         this.$el = $(Mustache.render(Templates.get('input'), this.data));
         this.delegateEvents();
@@ -240,7 +339,11 @@ DH.InputView = DH.ElementView.extend({
         }
     },
 
+    /**
+     * OnFocus actions, clear sample text if present
+     */
     focus: function(){
+        //Call parent OnFocus for highlight
         DH.ElementView.prototype.focus.call(this);
 
         if(this.options.sample){
@@ -251,8 +354,12 @@ DH.InputView = DH.ElementView.extend({
         }
     },
 
+    /**
+     * OnBlur actions, restore sample text if no value
+     */
     blur: function(){
         var val = '';
+        //Call parent OnBlur for highlight
         DH.ElementView.prototype.blur.call(this);
 
         if(this.options.sample){
@@ -260,6 +367,9 @@ DH.InputView = DH.ElementView.extend({
         }
     },
 
+    /**
+     * Display sample text
+     */
     showSample: function(){
         var val = '';
 
@@ -277,7 +387,7 @@ DH.InputView = DH.ElementView.extend({
 /**
  * Textarea field element
  *
- * @type {Form Element}
+ * @type {Object}
  */
 DH.AreaView = DH.ElementView.extend({
     checks: [], //reset checks list, or .prototype pointer would make it as a static across all children
@@ -289,12 +399,21 @@ DH.AreaView = DH.ElementView.extend({
         'keypress textarea': 'change'
     },
 
+    /**
+     * @constructs
+     */
     initialize: function(){
         //reset checks list, or .prototype pointer would make it as a static across all children
         this.checks = [];
         DH.ElementView.prototype.initialize.call(this)
     },
 
+    /**
+     * Get value if no parameters provided, Set value if provided
+     *
+     * @param {String} Str Optional, if present value will be set
+     * @return {String}
+     */
     val: function(Str){
         var val;
 
@@ -313,6 +432,9 @@ DH.AreaView = DH.ElementView.extend({
         }
     },
 
+    /**
+     * Render textarea template
+     */
     render: function(){
         this.$el = $(Mustache.render(Templates.get('area'), this.data));
         this.delegateEvents();
@@ -323,7 +445,11 @@ DH.AreaView = DH.ElementView.extend({
         }
     },
 
+    /**
+     * OnFocus actions, hide sample text
+     */
     focus: function(){
+        //Call parent OnBlur for highlight
         DH.ElementView.prototype.focus.call(this);
 
         if(this.options.sample){
@@ -334,7 +460,11 @@ DH.AreaView = DH.ElementView.extend({
         }
     },
 
+    /**
+     * OnBlur actions, show sample text if no value
+     */
     blur: function(){
+        //Call parent OnBlur for highlight
         DH.ElementView.prototype.blur.call(this);
 
         if(this.options.sample){
@@ -342,6 +472,9 @@ DH.AreaView = DH.ElementView.extend({
         }
     },
 
+    /**
+     * Show sample text
+     */
     showSample: function(){
         var val = '';
 
@@ -359,7 +492,8 @@ DH.AreaView = DH.ElementView.extend({
 /**
  * Dropdown field element
  *
- * @type {Form Element}
+ * @param {Array} options List of dropdown options
+ * @type {Object}
  */
 DH.DropdownView = DH.ElementView.extend({
     checks: [], //reset checks list, or .prototype pointer would make it as a static across all children
@@ -379,13 +513,16 @@ DH.DropdownView = DH.ElementView.extend({
         'click .dropdown .options li': 'pick'
     },
 
+    /**
+     * @constructs
+     */
     initialize: function(options){
         if(options){
             if(options.options){
                 this._options = options.options;
             }
             if(options.selected){
-
+                //TODO preselect the options
             }
         }
 
@@ -396,6 +533,11 @@ DH.DropdownView = DH.ElementView.extend({
         DH.ElementView.prototype.initialize.call(this)
     },
 
+    /**
+     * Render dropdown template, use provided text as no-value option
+     *
+     * @param text
+     */
     render: function(text){
         var data = {
             options: this._options
@@ -411,10 +553,21 @@ DH.DropdownView = DH.ElementView.extend({
         this.reset();
     },
 
+    /**
+     * Return the currently selected option value
+     *
+     * @return {String|null}
+     */
     val: function(){
         return this._selected?this._selected:null;
     },
 
+    /**
+     * Select the option with the given value
+     *
+     * @param {String} value
+     * @param {Object} options Object, pass .silent=true to not trigger change event
+     */
     select: function(value, options){
         var option;
 
@@ -432,6 +585,11 @@ DH.DropdownView = DH.ElementView.extend({
         }
     },
 
+    /**
+     * Highlight the option item under the mouse or kb
+     *
+     * @param {Event} e
+     */
     highlight: function(e){
         if(this._$hover){
             this._$hover.removeClass('over');
@@ -439,12 +597,22 @@ DH.DropdownView = DH.ElementView.extend({
         this._$hover = $(e.target).addClass('over');
     },
 
+    /**
+     * Remove highlight from the option element
+     *
+     * @param {Event} e
+     */
     removeHighlight: function(e){
         var el = $(e.target);
         el.removeClass('over');
         if(el == this._$hover) this._$hover = null;
     },
 
+    /**
+     * Select the option clicked
+     *
+     * @param {Event} e
+     */
     pick: function(e){
         if(e.type == 'click'){
             e.stopPropagation();
@@ -455,20 +623,32 @@ DH.DropdownView = DH.ElementView.extend({
         }
     },
 
+    /**
+     * Filter options matching keyboard input
+     */
     search: function(){
         //TODO add keyboard control
     },
 
+    /**
+     * Display the list of options
+     */
     show: function(){
         this._$list.fadeIn();
     },
 
+    /**
+     * Hide the list of options
+     */
     hide: function(){
         this._$list.fadeOut();
         this.cleanup();
 
     },
 
+    /**
+     * Remove highlight from option element
+     */
     cleanup: function(){
         if(this._$hover){
             this._$hover.removeClass('over');
@@ -476,6 +656,9 @@ DH.DropdownView = DH.ElementView.extend({
         }
     },
 
+    /**
+     * Reset dropdown to default condition
+     */
     reset: function(){
         if(this._defText){
             this.$('.selected').html(this._defText).addClass('novalue');
@@ -486,6 +669,11 @@ DH.DropdownView = DH.ElementView.extend({
         }
     },
 
+    /**
+     * Open list on click
+     *
+     * @param {Event} e
+     */
     click: function(e){
         if(e.type == 'click'){
             e.stopPropagation();
@@ -495,6 +683,11 @@ DH.DropdownView = DH.ElementView.extend({
         this.show();
     },
 
+    /**
+     * Replace dropdown options
+     *
+     * @param {Array} options to replace with
+     */
     resetOptions: function(options){
         this._options = options;
         this.$el.remove();

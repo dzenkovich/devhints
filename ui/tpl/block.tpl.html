@@ -1,0 +1,36 @@
+<script id="block" type="text/html">
+    <li class="block">
+        <form class="block-info">
+            <a class="show-on-hover edit-link">edit</a>
+            <a class="show-on-hover delete-link">delete</a>
+
+            <div class="block-info-view"></div>
+
+            <div class="row block-title-edit">
+                <div class="j-block-title-filed"></div>
+            </div>
+            <div class="row block-url-edit">
+                <div class="j-block-url-filed"></div>
+            </div>
+            <div class="row block-description-edit">
+                <div class="j-block-description-filed"></div>
+            </div>
+
+            <div class="block-edit-buttons">
+                <a class="cancel-link">cancel</a>
+                <a class="button j-save-button">Save</a>
+            </div>
+        </form>
+
+        <ul class="items"></ul>
+
+        <div class="add-item">
+            <a class="button">Add Item</a>
+        </div>
+    </li>
+</script>
+<script id="block-info" type="text/html">
+    <h2 class="block-title-view">{{title}}</h2>
+    <p class="block-url-view">{{url}}</p>
+    <p class="block-description-view">{{description}}</p>
+</script>

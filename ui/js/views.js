@@ -1,29 +1,20 @@
 /**
- * UI blocks views and rendering logic
+ * @fileOverview Developer Hints Views section, file containing all the view objects for the devhints project
+ * @author <a href="http://dzenkovich.com">Denis Zenkovich</a>
+ * @version 0.1
+ */
+
+/**
+ * DevHints Namespace
  *
- * @author Denis Zenkovich
+ * @type {Namespace}
  */
 var DH = DH || {}; //ensure namespace
 
-DH.StatusBar = Backbone.View.extend({
-    rows: [], //array of visible rows
-    _rowTpl: null, //saves tpl for renders
-
-    initialize: function(container){
-        this.$el = container;
-    },
-
-    showRow: function(){
-        var row;
-
-        row = $();
-    }
-});
-
 /**
- * The main view of application: page navigation/creation/deletion and etc
+ * The main view of application deals with initial setup, page navigation, page creation/deletion and more
  *
- * @type {View}
+ * @type {Object}
  */
 DH.AppView = Backbone.View.extend({
     router: null, //router controller
@@ -37,6 +28,9 @@ DH.AppView = Backbone.View.extend({
         "click .j-add-page": "openPageAddModal"
     },
 
+    /**
+     * @constructs DH.AppView
+     */
     initialize: function(){
         this.pages = new DH.PageCollection();
         this.pages.on('add', this.registerPage, this);
@@ -53,10 +47,11 @@ DH.AppView = Backbone.View.extend({
                 this.render();
             }.bind(this)
         });
-
-        DH.StatusBar = new DH.StatusBar();
     },
 
+    /**
+     * Create application router, assign routes and route actions
+     */
     setRouter: function(){
         this.router = new Backbone.Router();
         this.router.route('', 'home');
@@ -68,6 +63,9 @@ DH.AppView = Backbone.View.extend({
         Backbone.history.start({pushState: true});
     },
 
+    /**
+     * Display the main application layout by using the loaded template, setup navigation between existing pages
+     */
     render: function(){
         var resize; //window resize callback to ensure we don't get dumb whitespace in the footer
         var pagesList = []; //array of pages nav options
@@ -76,6 +74,7 @@ DH.AppView = Backbone.View.extend({
 
         this.$el.html(Mustache.render(Templates.get('app'), {}));
 
+        //prepare the list of possible page options for the header dropdown
         if(this.pages.length){
             defaultText = 'Please select a page';
             this.pages.each(function(page){
@@ -89,10 +88,12 @@ DH.AppView = Backbone.View.extend({
             defaultText = 'No pages present';
         }
 
+        //make logo redirect to home page
         this.$('.logo').click(function(){
             this.router.navigate('', {trigger: true});
         }.bind(this));
 
+        //create pages navigation dropdown
         this.navDropdown = new DH.DropdownView({options: pagesList});
         this.navDropdown.on('change', function(data){
             this.router.navigate(data.value, {trigger: true});
@@ -100,6 +101,7 @@ DH.AppView = Backbone.View.extend({
         this.navDropdown.render(defaultText);
         this.$('.nav-dropdown').append(this.navDropdown.$el);
 
+        //prepare the info for the Home page template
         pagesData = [];
         this.pages.each(function(page){
             pagesData.push({
@@ -108,6 +110,7 @@ DH.AppView = Backbone.View.extend({
                 description: page.get('description')
             });
         });
+        //render the template and display the content
         $(Mustache.render(Templates.get('homepage'), {pages: pagesData}))
             .appendTo(this.$('.pages'))
             .find('.pages-list .item a').click(function(e){
@@ -118,6 +121,7 @@ DH.AppView = Backbone.View.extend({
 
         this.setRouter();
 
+        //update body height so that site displays at full screen
         resize = function(){
             this.$el.css('min-height', $(window).height());
         }.bind(this);
@@ -125,6 +129,9 @@ DH.AppView = Backbone.View.extend({
         resize();
     },
 
+    /**
+     * Display the add page modal window
+     */
     openPageAddModal: function(){
         if(!this._addModal){
             this._addModal = new DH.AddPageModalView();
@@ -133,6 +140,11 @@ DH.AppView = Backbone.View.extend({
         this._addModal.open();
     },
 
+    /**
+     * Load the page into the viewport by the given url slug
+     *
+     * @param {String} pageUrl url slug of the page to navigate to
+     */
     openPage: function(pageUrl){
         var pageModel;
         var pageView = null;
@@ -150,6 +162,7 @@ DH.AppView = Backbone.View.extend({
             pageView = this.pagesCache[pageUrl];
         }
 
+        //if page exists
         if(pageView){
             this.$('.pages').removeClass('not-found open-homepage');
             this.$('.pages .page').hide();
@@ -161,12 +174,20 @@ DH.AppView = Backbone.View.extend({
         }
     },
 
+    /**
+     * Navigate to the home page, reset the pages dropdown
+     */
     openHomepage: function(){
         this.$('.pages .page').hide();
         this.$('.pages').addClass('open-homepage');
         this.navDropdown.reset();
     },
 
+    /**
+     * Create new page and navigate so it gets displayed
+     *
+     * @param {Object} data Page data to be passed to model
+     */
     createPage: function(data){
         var page = this.pages.create(data, {
             success: function(){
@@ -184,29 +205,35 @@ DH.AppView = Backbone.View.extend({
      */
     registerPage: function(page, pages){
         //TODO update navigation dropdown
-
     }
 });
 
 /**
- * Add page modal interface
+ * Add page modal window view entity
  *
- * @type {View}
+ * @type {Object}
  */
 DH.AddPageModalView = DH.ModalView.extend({
     form: null, //page form element
 
+    /**
+     * @constructs DH.AddPageModalView
+     */
     initialize: function(){
         DH.ModalView.prototype.initialize.call(this);
 
         this.render();
     },
 
+    /**
+     * Create Add Page form and render into modal template
+     */
     render: function(){
         var FieldTitle;
         var FieldSlug;
         var FieldDescription;
 
+        //Create new form
         this.form = new DH.FormView();
         this.form.$el = $(Mustache.render(Templates.get('add-page-form'), this.data));
         this.form.on('submit', function(){
@@ -218,6 +245,7 @@ DH.AddPageModalView = DH.ModalView.extend({
             this.close();
         }, this);
 
+        //Create title field
         FieldTitle = new DH.InputView({
             rules: {
                 required: {
@@ -225,6 +253,7 @@ DH.AddPageModalView = DH.ModalView.extend({
                 }
             }
         });
+        //Create URL slug field
         FieldSlug = new DH.InputView({
             rules: {
                 required: {
@@ -232,22 +261,22 @@ DH.AddPageModalView = DH.ModalView.extend({
                 }
             }
         });
+        //Create page description field
         FieldDescription = new DH.AreaView();
 
+        //prepare displays of the each field
         FieldTitle.render();
         FieldSlug.render();
         FieldDescription.render();
 
-        //register fields to the form
+        //add fields to the form and link it with form for validation
         this.form.register(FieldTitle, this.form.$('.j-field-title'));
         this.form.register(FieldSlug, this.form.$('.j-field-slug'));
         this.form.register(FieldDescription, this.form.$('.j-field-description'));
 
-        //remember to bind click handler to this object
         this.form.$('.j-lnk-cancel').click(function(){
             this.close();
         }.bind(this));
-        //remember to bind click handler to this object
         this.form.$('.j-btn-add').click(function(){
             this.form.submit();
         }.bind(this));
@@ -259,6 +288,11 @@ DH.AddPageModalView = DH.ModalView.extend({
         this._$content.append(this.form.$el); //place the form
     },
 
+    /**
+     * Toggle the page create method of the main App view
+     *
+     * @param {Object} data Page data
+     */
     createPage: function(data){
         //TODO figure out better solution
         DH.App.createPage(data);
@@ -268,7 +302,8 @@ DH.AddPageModalView = DH.ModalView.extend({
 /**
  * Page representation, controls blocks collection, linked to page model
  *
- * @type {View}
+ * @param {Object} model Corresponding page Model object
+ * @type {Object}
  */
 DH.PageView = Backbone.View.extend({
     model: null, //page model
@@ -283,10 +318,13 @@ DH.PageView = Backbone.View.extend({
         'click .add-block': 'addBlock'
     },
 
+    /**
+     * @constructs DH.PageView
+     */
     initialize: function(model){
         this.model = model;
         //this.model.on('change', this.render, this);
-        this.model.on('destroy', this.remove, this);
+        this.model.on('destroy', this.delete, this);
         this.model.on('sync', function(){
             this._updateInfo();
         }, this);
@@ -295,6 +333,9 @@ DH.PageView = Backbone.View.extend({
         this.model.blocks.fetch();
     },
 
+    /**
+     * Create the display and edit views of the page and prepare them for future output and usage
+     */
     render: function(){
         this.$el = $(Mustache.render(Templates.get('page'), this.model.attributes));
         this._updateInfo();
@@ -343,10 +384,18 @@ DH.PageView = Backbone.View.extend({
         }.bind(this));
     },
 
+    /**
+     * Update the page display view without re-rendering all of the template
+     *
+     * @private
+     */
     _updateInfo: function(){
         this.$('.page-info-view').html(Mustache.render(Templates.get('page-info'), this.model.attributes));
     },
 
+    /**
+     * Toggle page into edit mode
+     */
     edit: function(){
         this.form.fieldTitle.val(this.model.get('title'));
         this.form.fieldSlug.val(this.model.get('url'));
@@ -355,19 +404,23 @@ DH.PageView = Backbone.View.extend({
         this.form.$el.addClass('edit');
     },
 
+    /**
+     * Cancel editing and toggle back to view mode
+     */
     cancel: function(){
         this.form.$el.removeClass('edit');
     },
 
+    /**
+     * Save page information (update related Model) and toggle to view mode
+     */
     save: function(){
         var data; //edited info hash
         var onSave; //model save success callback
         var onFail; //model save error callback
-        var btn = this.form.$('.j-save-button'); //button that triggered the saving
 
         onSave = function(){
             this.$el.removeClass('syncing');
-            debugger;
         }.bind(this);
         onFail = function(){
             this.$el.removeClass('syncing');
@@ -375,11 +428,13 @@ DH.PageView = Backbone.View.extend({
             throw 'Server error while saving block';
         }.bind(this);
 
+        //prepare the data
         data = {
             title: this.form.fieldTitle.val(),
             url: this.form.fieldSlug.val(),
             description: this.form.fieldDescription.val()
         };
+        //update the Page model
         this.model.save(data, {
             success: onSave,
             error: onFail,
@@ -390,10 +445,19 @@ DH.PageView = Backbone.View.extend({
         this.$el.addClass('syncing');
     },
 
-    remove: function(){
-
+    /**
+     * Delete page from the application
+     */
+    delete: function(){
+        if(this.model){
+            this.model.destroy();
+        }
+        this.remove();
     },
 
+    /**
+     * Create new Block item, add it to the page and display it
+     */
     addBlock: function(){
         var newBlockModel;
         var newBlockView;
@@ -410,6 +474,9 @@ DH.PageView = Backbone.View.extend({
         newBlockView.edit();
     },
 
+    /**
+     * Render loaded page blocks and add them to the page display
+     */
     processLoadedBlocks: function(){
         this.model.blocks.each(function(model){
             var view;
@@ -422,9 +489,10 @@ DH.PageView = Backbone.View.extend({
 });
 
 /**
- * Block representation, controls items collection
+ * Block representation, controls items collection, linked to block model
  *
- * @type {View}
+ * @param {Object} model Corresponding block model
+ * @type {Object}
  */
 DH.BlockView = Backbone.View.extend({
     model: null, //block model
@@ -440,6 +508,9 @@ DH.BlockView = Backbone.View.extend({
         'click .add-item': 'addItem'
     },
 
+    /**
+     * @constructs DH.BlockView
+     */
     initialize: function(model){
         this.model = model;
 
@@ -452,15 +523,20 @@ DH.BlockView = Backbone.View.extend({
         this.model.items.fetch();
     },
 
+    /**
+     * Create the display and edit views of the block and prepare them for future output and usage
+     */
     render: function(){
         this.$el = $(Mustache.render(Templates.get('block'), this.model.attributes));
         this._updateInfo();
         this.delegateEvents();
 
+        //create form
         this.form = new DH.FormView();
         this.form.$el = this.$('.block-info');
         this.form.on('submit', this.save, this);
 
+        //add title field
         this.form.fieldTitle = new DH.InputView({
             sample: 'Enter block title',
             rules: {
@@ -469,6 +545,7 @@ DH.BlockView = Backbone.View.extend({
                 }
             }
         });
+        //add url slug field
         this.form.fieldSlug = new DH.InputView({
             sample: 'Enter block url slug',
             rules: {
@@ -477,33 +554,40 @@ DH.BlockView = Backbone.View.extend({
                 }
             }
         });
+        //add description field
         this.form.fieldDescription = new DH.AreaView({
             sample: 'Enter block description'
         });
 
+        //prepare display of each field
         this.form.fieldTitle.render();
         this.form.fieldSlug.render();
         this.form.fieldDescription.render();
 
-        //register fields to the form
+        //add fields to the form view and link to it's validation routine
         this.form.register(this.form.fieldTitle, this.form.$('.j-block-title-filed'));
         this.form.register(this.form.fieldSlug, this.form.$('.j-block-url-filed'));
         this.form.register(this.form.fieldDescription, this.form.$('.j-block-description-filed'));
 
-        //remember to bind click handler to this object
         this.form.$('.j-lnk-cancel').click(function(){
             this.close();
         }.bind(this));
-        //remember to bind click handler to this object
         this.form.$('.j-btn-add').click(function(){
             this.form.submit();
         }.bind(this));
     },
 
+    /**
+     * Update block view part without re-rendering all of the template
+     * @private
+     */
     _updateInfo: function(){
         this.$('.block-info-view').html(Mustache.render(Templates.get('block-info'), this.model.attributes));
     },
 
+    /**
+     * Toggle block edit mode
+     */
     edit: function(){
         this.form.fieldTitle.val(this.model.get('title'));
         this.form.fieldSlug.val(this.model.get('url'));
@@ -512,6 +596,9 @@ DH.BlockView = Backbone.View.extend({
         this.form.$el.addClass('edit');
     },
 
+    /**
+     * Cancel changes and toggle back view mode
+     */
     cancel: function(){
         this.form.$el.removeClass('edit');
 
@@ -523,6 +610,9 @@ DH.BlockView = Backbone.View.extend({
         }
     },
 
+    /**
+     * Save changes (update model) and toggle view mode
+     */
     save: function(){
         var data; //edited info hash
         var onSave; //model save success callback
@@ -538,11 +628,13 @@ DH.BlockView = Backbone.View.extend({
             throw 'Server error while saving block';
         };
 
+        //prepare data
         data = {
             title: this.form.fieldTitle.val(),
             url: this.form.fieldSlug.val(),
             description: this.form.fieldDescription.val()
         };
+        //update model
         this.model.save(data, {
             success: onSave,
             error: onFail,
@@ -553,6 +645,9 @@ DH.BlockView = Backbone.View.extend({
         btn.addClass('syncing');
     },
 
+    /**
+     * Delete the block from the application
+     */
     delete: function(){
         if(this.model){
             this.model.destroy();
@@ -560,6 +655,9 @@ DH.BlockView = Backbone.View.extend({
         this.remove();
     },
 
+    /**
+     * Create new item, render it and add to block display
+     */
     addItem: function(){
         var newItemModel;
         var newItemView;
@@ -576,6 +674,9 @@ DH.BlockView = Backbone.View.extend({
         newItemView.edit();
     },
 
+    /**
+     * Render loaded items and add them to block display
+     */
     processLoadedItems: function(){
         this.model.items.each(function(model){
             var view;
@@ -590,7 +691,8 @@ DH.BlockView = Backbone.View.extend({
 /**
  * Item representation, controls item information
  *
- * @type {View}
+ * @param {Object} model Corresponding item model
+ * @type {Object}
  */
 DH.ItemView = Backbone.View.extend({
     model: null, //block model
@@ -605,6 +707,9 @@ DH.ItemView = Backbone.View.extend({
         }
     },
 
+    /**
+     * @constructs DH.ItemView
+     */
     initialize: function(model){
         this.model = model;
 
@@ -613,15 +718,20 @@ DH.ItemView = Backbone.View.extend({
         }, this);
     },
 
+    /**
+     * Create the display and edit views of the item and prepare them for future output and usage
+     */
     render: function(){
         this.$el = $(Mustache.render(Templates.get('item'), this.model.attributes));
         this._updateInfo();
         this.delegateEvents();
 
+        //create form
         this.form = new DH.FormView();
         this.form.$el = this.$('.item-info');
         this.form.on('submit', this.save, this);
 
+        //add title field
         this.form.fieldTitle = new DH.InputView({
             sample: 'Enter item title',
             rules: {
@@ -630,10 +740,12 @@ DH.ItemView = Backbone.View.extend({
                 }
             }
         });
+        //add description field
         this.form.fieldDescription = new DH.AreaView({
             sample: 'Enter item description'
         });
 
+        //prepare display of each field
         this.form.fieldTitle.render();
         this.form.fieldDescription.render();
 
@@ -641,20 +753,26 @@ DH.ItemView = Backbone.View.extend({
         this.form.register(this.form.fieldTitle, this.form.$('.j-item-title-filed'));
         this.form.register(this.form.fieldDescription, this.form.$('.j-item-description-filed'));
 
-        //remember to bind click handler to this object
         this.form.$('.j-lnk-cancel').click(function(){
             this.close();
         }.bind(this));
-        //remember to bind click handler to this object
         this.form.$('.j-btn-add').click(function(){
             this.form.submit();
         }.bind(this));
     },
 
+    /**
+     * Update item view part without re-rendering all of the template
+     *
+     * @private
+     */
     _updateInfo: function(){
         this.$('.item-info-view').html(Mustache.render(Templates.get('item-info'), this.model.attributes));
     },
 
+    /**
+     * toggle edit mode
+     */
     edit: function(){
         this.form.fieldTitle.val(this.model.get('title'));
         this.form.fieldDescription.val(this.model.get('description'));
@@ -662,6 +780,9 @@ DH.ItemView = Backbone.View.extend({
         this.form.$el.addClass('edit');
     },
 
+    /**
+     * cancel changes and toggle back to view mode
+     */
     cancel: function(){
         this.form.$el.removeClass('edit');
 
@@ -673,6 +794,9 @@ DH.ItemView = Backbone.View.extend({
         }
     },
 
+    /**
+     * save changes (update model) and toggle view mode
+     */
     save: function(){
         var data; //edited info hash
         var url; //url created from title
@@ -689,13 +813,16 @@ DH.ItemView = Backbone.View.extend({
             throw 'Server error while saving block';
         };
 
+        //generate item url
         url = this.form.fieldTitle.val().toLowerCase().replace(/[^\w\s]/g, '').trim().replace(/\s/g, '-');
 
+        //prepare data
         data = {
             title: this.form.fieldTitle.val(),
             url: url,
             description: this.form.fieldDescription.val()
         };
+        //update model
         this.model.save(data, {
             success: onSave,
             error: onFail,
@@ -706,6 +833,9 @@ DH.ItemView = Backbone.View.extend({
         btn.addClass('syncing');
     },
 
+    /**
+     * Delete item from the application
+     */
     delete: function(){
         if(this.model){
             this.model.destroy();
